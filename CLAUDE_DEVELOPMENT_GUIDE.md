@@ -74,6 +74,21 @@ claude
 2.  `> TemplateManager.swiftを作成し、テンプレートをJSONファイルとしてローカルに保存・読み込みする機能を実装して。`
 3.  `> CloudKitを有効にして、TemplateManagerにiCloud経由でテンプレートを同期する機能を実装して。`
 
+### Phase 6: リモートコントロール機能の実装
+
+**目的**: 同一LAN上のスマートフォンやタブレットのブラウザからタイマーを遠隔操作できるサーバー機能を実装します。
+
+**プロンプト例**:
+
+1.  `> Services/RemoteControlService.swiftを作成して。Network.frameworkを使ってポート8080でHTTPサーバーを、ポート8081でWebSocketサーバーを起動するクラスを実装して。`
+2.  `> RemoteControlServiceにBonjour (NetServiceBrowser) を使ってサービスを広告する機能を追加して。サービス名は"_timekeeperpro._tcp"で。`
+3.  `> HTTPサーバーに以下のREST APIエンドポイントを実装して：GET /status, POST /timer/start, POST /timer/pause, POST /timer/reset, POST /timer/adjust, PUT /timer/duration, GET /templates, POST /templates/:id/load, POST /auth/pin。`
+4.  `> PINコード認証とセッショントークン（UUID）の発行・検証ロジックをRemoteControlServiceに実装して。すべてのAPIリクエストでX-Session-Tokenヘッダーを検証して。`
+5.  `> WebSocketサーバーにtick（毎秒）、stateChanged、phaseChanged、timerFinishedイベントを接続中の全クライアントにブロードキャストする機能を実装して。TimerViewModelの@Publishedプロパティを購読して。`
+6.  `> RemoteControlServiceにHTTPサーバーから配信するWebリモコンUI（HTML/CSS/JS）を埋め込んで。タイマー残り時間リアルタイム表示、スタート/一時停止/リセットボタン、±1分・±5分ボタン、テンプレート選択プルダウンを含めて。WebSocketで状態を受け取って即時反映して。`
+7.  `> SettingsViewに「リモートコントロール」セクションを追加して。有効/無効トグル、PINコード表示・再生成ボタン、接続承認モードトグル、QRコード表示ボタン（URLとPINを含む）を実装して。`
+8.  `> 新規デバイス接続時にmacOS通知（UserNotifications）とアプリ内アラートを表示し、ユーザーが承認または拒否できる接続承認機能を実装して。`
+
 ## 3. デバッグとテスト
 
 - **エラー修正**: エラーメッセージをそのままClaude Codeに貼り付け、「このエラーを解決して」と指示します。
