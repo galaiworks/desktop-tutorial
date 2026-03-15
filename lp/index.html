@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>あおちゃん – AI 青色申告アシスタント | 個人事業主の強い味方</title>
+  <meta name="description" content="レシート写真を送るだけ。AIが自動で家計簿に記録し、個人費・事業費を振り分け。補助金情報もLINEで届く。青色申告・確定申告をもっとラクに。" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Noto Sans JP', sans-serif; }
+
+    /* グラデーション背景 */
+    .hero-gradient {
+      background: linear-gradient(135deg, #0f2a5e 0%, #1a4a8a 40%, #0e8a7a 100%);
+    }
+    .section-gradient {
+      background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
+    }
+
+    /* アニメーション */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-ring {
+      0%   { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+    @keyframes slide-in-left {
+      from { opacity: 0; transform: translateX(-40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slide-in-right {
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes count-up {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .float-anim  { animation: float 4s ease-in-out infinite; }
+    .fade-up     { animation: fadeInUp 0.7s ease-out both; }
+    .delay-1     { animation-delay: 0.1s; }
+    .delay-2     { animation-delay: 0.25s; }
+    .delay-3     { animation-delay: 0.4s; }
+    .delay-4     { animation-delay: 0.55s; }
+
+    /* チャットバブル */
+    .chat-bubble-left {
+      background: #fff;
+      border-radius: 0 18px 18px 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.10);
+    }
+    .chat-bubble-right {
+      background: #dcf8c6;
+      border-radius: 18px 0 18px 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.10);
+    }
+    .chat-bubble-bot {
+      background: #e8f4fd;
+      border-radius: 0 18px 18px 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.10);
+    }
+
+    /* カード hover */
+    .feature-card {
+      transition: transform .25s, box-shadow .25s;
+    }
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0,0,0,.12);
+    }
+
+    /* LINE ボタン */
+    .line-btn {
+      background: #06c755;
+      transition: background .2s, transform .2s, box-shadow .2s;
+    }
+    .line-btn:hover {
+      background: #05b34d;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(6,199,85,.45);
+    }
+
+    /* pulse ring */
+    .pulse-wrap { position: relative; display: inline-flex; }
+    .pulse-wrap::before, .pulse-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: #06c755;
+      animation: pulse-ring 2s ease-out infinite;
+    }
+    .pulse-wrap::after { animation-delay: 1s; }
+
+    /* スクロールフェード（Intersection Observer で付与） */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .65s, transform .65s; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* 料金カード */
+    .price-card { transition: transform .25s, box-shadow .25s; }
+    .price-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.15); }
+    .price-popular {
+      background: linear-gradient(135deg, #1a4a8a, #0e8a7a);
+      color: #fff;
+    }
+
+    /* スマホ画像モック */
+    .phone-mock {
+      width: 220px;
+      border-radius: 32px;
+      box-shadow: 0 30px 60px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.15);
+      overflow: hidden;
+      background: #1c1c1e;
+    }
+    .phone-screen {
+      background: #f5f5f5;
+      padding: 12px 10px;
+      min-height: 380px;
+    }
+
+    /* ステップライン */
+    .step-line::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 48px;
+      width: 2px;
+      height: calc(100% - 32px);
+      background: linear-gradient(to bottom, #3b82f6, #10b981);
+      transform: translateX(-50%);
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-900 overflow-x-hidden">
+
+<!-- ═══════════════════════════════════ HEADER ═══════════════════════════════════ -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+  <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">🌱</span>
+      <span class="font-black text-lg tracking-tight text-blue-900">あおちゃん</span>
+      <span class="hidden sm:inline text-xs text-gray-400 ml-1">AI 青色申告アシスタント</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600 font-medium">
+      <a href="#features" class="hover:text-blue-700 transition-colors">機能</a>
+      <a href="#howitworks" class="hover:text-blue-700 transition-colors">使い方</a>
+      <a href="#pricing"   class="hover:text-blue-700 transition-colors">料金</a>
+      <a href="#faq"       class="hover:text-blue-700 transition-colors">FAQ</a>
+    </nav>
+    <a href="#cta" class="line-btn text-white text-sm font-bold px-4 py-2 rounded-full flex items-center gap-2">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.92 2 10.76c0 3.09 1.74 5.82 4.38 7.48L5.5 22l4.13-2.17A11.3 11.3 0 0 0 12 20c5.52 0 10-3.92 10-8.76C22 5.92 17.52 2 12 2z"/></svg>
+      友だち追加
+    </a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════ HERO ═══════════════════════════════════ -->
+<section class="hero-gradient pt-24 pb-20 relative overflow-hidden">
+  <!-- 背景デコ -->
+  <div class="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-0 left-0 w-80 h-80 bg-teal-400/10 rounded-full blur-3xl"></div>
+
+  <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+
+    <!-- テキスト -->
+    <div>
+      <div class="inline-flex items-center gap-2 bg-white/15 text-white text-xs font-bold px-3 py-1.5 rounded-full mb-5 fade-up">
+        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+        LINE からレシート写真 1枚で記録できる
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl font-black text-white leading-tight mb-5 fade-up delay-1">
+        青色申告、<br />
+        もう迷わなくて<br />
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-teal-300">いいんです。</span>
+      </h1>
+
+      <p class="text-blue-100 text-lg leading-relaxed mb-8 fade-up delay-2">
+        レシートを LINE で送るだけ。AI が自動で家計簿に記録し、個人費・事業費を振り分け。補助金・節税情報もリアルタイムでお届け。個人事業主の経理をまるごとサポートします。
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 fade-up delay-3">
+        <a href="#cta" class="pulse-wrap">
+          <span class="relative z-10 line-btn text-white font-black px-8 py-4 rounded-full flex items-center justify-center gap-2 text-base">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.92 2 10.76c0 3.09 1.74 5.82 4.38 7.48L5.5 22l4.13-2.17A11.3 11.3 0 0 0 12 20c5.52 0 10-3.92 10-8.76C22 5.92 17.52 2 12 2z"/></svg>
+            無料で試してみる
+          </span>
+        </a>
+        <a href="#howitworks" class="text-white/80 font-medium px-6 py-4 rounded-full border border-white/25 hover:border-white/60 hover:text-white transition text-center text-base">
+          使い方を見る →
+        </a>
+      </div>
+
+      <!-- 信頼バッジ -->
+      <div class="flex flex-wrap gap-4 mt-8 fade-up delay-4">
+        <div class="flex items-center gap-1.5 text-blue-100 text-sm">
+          <span class="text-yellow-300 text-base">★★★★★</span>
+          <span>4.9 / 5.0</span>
+        </div>
+        <div class="text-blue-200/60">|</div>
+        <div class="text-blue-100 text-sm">🔒 セキュア通信</div>
+        <div class="text-blue-200/60">|</div>
+        <div class="text-blue-100 text-sm">🇯🇵 日本国内サーバー対応</div>
+      </div>
+    </div>
+
+    <!-- スマホモック + チャット -->
+    <div class="flex justify-center float-anim fade-up delay-2">
+      <div class="relative">
+        <!-- 背景グロー -->
+        <div class="absolute inset-0 bg-teal-400/20 blur-2xl rounded-full scale-110"></div>
+
+        <div class="phone-mock relative">
+          <!-- ノッチ -->
+          <div class="bg-[#1c1c1e] h-7 flex items-center justify-center">
+            <div class="w-16 h-3 bg-black rounded-full"></div>
+          </div>
+          <!-- LINE 画面 -->
+          <div class="phone-screen space-y-3">
+            <!-- ヘッダー -->
+            <div class="bg-[#00b900] text-white text-center text-xs font-bold py-2 rounded-lg -mx-2 -mt-2 mb-3">
+              🌱 あおちゃん
+            </div>
+
+            <!-- チャット -->
+            <div class="flex gap-2 items-start">
+              <div class="w-7 h-7 rounded-full bg-green-500 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">あ</div>
+              <div class="chat-bubble-bot px-3 py-2 text-xs max-w-[150px] leading-relaxed">
+                📸 レシートを読み取りました！<br/>
+                🏪 セブンイレブン<br/>
+                💰 1,250円<br/>
+                💼 <b>事業費</b> として記録<br/>
+                <span class="text-gray-400">これで登録しますか？</span>
+              </div>
+            </div>
+
+            <div class="flex justify-end">
+              <div class="chat-bubble-right px-3 py-2 text-xs">はい！お願い✨</div>
+            </div>
+
+            <div class="flex gap-2 items-start">
+              <div class="w-7 h-7 rounded-full bg-green-500 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">あ</div>
+              <div class="chat-bubble-bot px-3 py-2 text-xs max-w-[160px] leading-relaxed">
+                ✅ 記録しました！<br/>
+                今月の事業費:<br/>
+                <b class="text-blue-700">💼 42,800円</b><br/>
+                予算まであと<b class="text-green-600"> 57,200円</b>
+              </div>
+            </div>
+
+            <div class="flex gap-2 items-start">
+              <div class="w-7 h-7 rounded-full bg-green-500 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">あ</div>
+              <div class="chat-bubble-bot px-3 py-2 text-xs max-w-[160px]">
+                🎁 <b>新着補助金情報</b><br/>
+                IT導入補助金の<br/>
+                申請受付が<br/>
+                <b class="text-red-500">4/30まで！</b>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 波形区切り -->
+  <div class="absolute bottom-0 left-0 right-0">
+    <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0 48L1440 48L1440 20C1200 48 960 0 720 12C480 24 240 48 0 20L0 48Z" fill="white"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ STATS ═══════════════════════════════════ -->
+<section class="py-12 bg-white">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <div class="reveal">
+        <div class="text-3xl font-black text-blue-800">98<span class="text-xl">%</span></div>
+        <div class="text-sm text-gray-500 mt-1">レシートOCR精度</div>
+      </div>
+      <div class="reveal">
+        <div class="text-3xl font-black text-blue-800">3<span class="text-base font-medium text-gray-500">秒</span></div>
+        <div class="text-sm text-gray-500 mt-1">平均処理時間</div>
+      </div>
+      <div class="reveal">
+        <div class="text-3xl font-black text-blue-800">500<span class="text-base font-medium text-gray-500">円〜</span></div>
+        <div class="text-sm text-gray-500 mt-1">月額コスト</div>
+      </div>
+      <div class="reveal">
+        <div class="text-3xl font-black text-blue-800">24<span class="text-base font-medium text-gray-500">h</span></div>
+        <div class="text-sm text-gray-500 mt-1">補助金定期リサーチ</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ PROBLEM ═══════════════════════════════════ -->
+<section class="py-16 section-gradient">
+  <div class="max-w-4xl mx-auto px-4 text-center">
+    <p class="text-sm font-bold text-blue-600 tracking-widest uppercase mb-3 reveal">こんな悩みありませんか？</p>
+    <h2 class="text-3xl font-black text-gray-900 mb-10 reveal">個人事業主の<span class="text-red-500">経理あるある</span></h2>
+
+    <div class="grid md:grid-cols-3 gap-5">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-red-100 reveal">
+        <div class="text-4xl mb-3">😩</div>
+        <h3 class="font-bold text-gray-800 mb-2">レシートが溜まる一方</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">領収書の山。年末になって焦って整理。どれが経費か分からない…</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-red-100 reveal">
+        <div class="text-4xl mb-3">😰</div>
+        <h3 class="font-bold text-gray-800 mb-2">個人費と事業費が混ざる</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">カフェで仕事してたから経費? 家の光熱費は？按分計算が面倒で後回し…</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-red-100 reveal">
+        <div class="text-4xl mb-3">😤</div>
+        <h3 class="font-bold text-gray-800 mb-2">補助金の申請を逃す</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">使えそうな補助金があったのに気づいたら締切過ぎてた。情報収集が追いつかない…</p>
+      </div>
+    </div>
+
+    <!-- 矢印 -->
+    <div class="text-5xl font-black text-blue-400 my-8 reveal">↓</div>
+
+    <div class="bg-gradient-to-r from-blue-600 to-teal-600 text-white rounded-2xl p-8 reveal">
+      <div class="text-5xl mb-3">🌱</div>
+      <h3 class="text-2xl font-black mb-2">あおちゃんが全部やります</h3>
+      <p class="text-blue-100">LINE にレシートを送るだけ。分類も、集計も、補助金チェックも。確定申告が怖くなくなります。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ FEATURES ═══════════════════════════════════ -->
+<section id="features" class="py-20 bg-white">
+  <div class="max-w-6xl mx-auto px-4">
+    <p class="text-sm font-bold text-blue-600 tracking-widest uppercase mb-3 text-center reveal">機能</p>
+    <h2 class="text-3xl font-black text-center text-gray-900 mb-12 reveal">あおちゃんができること</h2>
+
+    <!-- 機能グリッド -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <div class="feature-card bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-7 border border-green-100 reveal">
+        <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-2xl mb-4">📸</div>
+        <h3 class="font-black text-gray-900 mb-2">レシート自動OCR</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">LINE で写真を送るだけ。Claude AI が店名・金額・明細を瞬時に読み取り、家計簿に自動記録します。</p>
+        <ul class="mt-4 space-y-1 text-sm text-gray-500">
+          <li>✅ 手書きレシートも対応</li>
+          <li>✅ 電子レシート・PDFも可</li>
+          <li>✅ 平均処理時間 3 秒</li>
+        </ul>
+      </div>
+
+      <div class="feature-card bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-7 border border-blue-100 reveal">
+        <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-2xl mb-4">💼</div>
+        <h3 class="font-black text-gray-900 mb-2">個人費・事業費を自動振り分け</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">業種・購入内容から AI が判定。家賃・通信費などの按分比率も自動提案。確認するだけでOKです。</p>
+        <ul class="mt-4 space-y-1 text-sm text-gray-500">
+          <li>✅ 10業種対応（IT・飲食・農業等）</li>
+          <li>✅ 按分計算の自動提案</li>
+          <li>✅ 税務リスクも事前チェック</li>
+        </ul>
+      </div>
+
+      <div class="feature-card bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-7 border border-purple-100 reveal">
+        <div class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center text-2xl mb-4">📊</div>
+        <h3 class="font-black text-gray-900 mb-2">月次レポートを自動配信</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">毎月1日に前月の収支レポートを LINE で送信。予算対比・カテゴリ別・節約アドバイス付き。</p>
+        <ul class="mt-4 space-y-1 text-sm text-gray-500">
+          <li>✅ 毎月1日に自動送信</li>
+          <li>✅ 予算 vs 実績グラフ</li>
+          <li>✅ AI 節約アドバイス付き</li>
+        </ul>
+      </div>
+
+      <div class="feature-card bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-7 border border-yellow-100 reveal">
+        <div class="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center text-2xl mb-4">🎁</div>
+        <h3 class="font-black text-gray-900 mb-2">補助金・助成金リサーチ</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">毎週 Web をリサーチし、あなたの業種に合った補助金情報をお届け。締切アラートも届きます。</p>
+        <ul class="mt-4 space-y-1 text-sm text-gray-500">
+          <li>✅ 毎週月曜に自動更新</li>
+          <li>✅ 国・都道府県・民間すべて対象</li>
+          <li>✅ 締切 2 週間前にアラート</li>
+        </ul>
+      </div>
+
+      <div class="feature-card bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-7 border border-red-100 reveal">
+        <div class="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center text-2xl mb-4">📅</div>
+        <h3 class="font-black text-gray-900 mb-2">確定申告サポート</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">青色申告の手続き・控除・経費について、LINE でいつでも質問できます。65万円控除の活用法も。</p>
+        <ul class="mt-4 space-y-1 text-sm text-gray-500">
+          <li>✅ 青色申告 65万円控除対応</li>
+          <li>✅ インボイス制度の疑問解消</li>
+          <li>✅ 2月〜3月は期限リマインド</li>
+        </ul>
+      </div>
+
+      <div class="feature-card bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl p-7 border border-teal-100 reveal">
+        <div class="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center text-2xl mb-4">🔔</div>
+        <h3 class="font-black text-gray-900 mb-2">定期 LINE 通知</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">毎日の入力リマインダー、週次サマリー、予算超過アラート。忘れがちな記録もしっかりサポート。</p>
+        <ul class="mt-4 space-y-1 text-sm text-gray-500">
+          <li>✅ 毎日 / 毎週 / 毎月の自動通知</li>
+          <li>✅ 通知時刻は自由に設定</li>
+          <li>✅ 予算超過を即座にアラート</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ HOW IT WORKS ═══════════════════════════════════ -->
+<section id="howitworks" class="py-20 section-gradient">
+  <div class="max-w-4xl mx-auto px-4">
+    <p class="text-sm font-bold text-blue-600 tracking-widest uppercase mb-3 text-center reveal">使い方</p>
+    <h2 class="text-3xl font-black text-center text-gray-900 mb-14 reveal">たった 3 ステップで始められる</h2>
+
+    <div class="relative space-y-12">
+      <!-- ステップ1 -->
+      <div class="flex flex-col md:flex-row items-center gap-8 reveal">
+        <div class="w-full md:w-1/2 order-2 md:order-1">
+          <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-3">STEP 1</div>
+          <h3 class="text-2xl font-black text-gray-900 mb-3">LINE で友だち追加</h3>
+          <p class="text-gray-600 leading-relaxed mb-4">QR コードまたはリンクから「あおちゃん」を友だち追加。最初に業種・予算などを設定するだけで、あとは使い始められます。</p>
+          <div class="bg-blue-50 rounded-xl px-4 py-3 text-sm text-blue-700 inline-flex items-center gap-2">
+            ⚡ セットアップ所要時間 <b>約 3 分</b>
+          </div>
+        </div>
+        <div class="w-full md:w-1/2 order-1 md:order-2 flex justify-center">
+          <div class="bg-white rounded-2xl p-8 shadow-lg w-48 flex flex-col items-center gap-3">
+            <div class="w-28 h-28 bg-gray-100 rounded-xl flex items-center justify-center text-5xl">📱</div>
+            <div class="text-center text-sm text-gray-500 font-medium">QRコードで追加</div>
+            <div class="line-btn text-white text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.92 2 10.76c0 3.09 1.74 5.82 4.38 7.48L5.5 22l4.13-2.17A11.3 11.3 0 0 0 12 20c5.52 0 10-3.92 10-8.76C22 5.92 17.52 2 12 2z"/></svg>
+              友だち追加
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent reveal"></div>
+
+      <!-- ステップ2 -->
+      <div class="flex flex-col md:flex-row items-center gap-8 reveal">
+        <div class="w-full md:w-1/2 flex justify-center">
+          <div class="bg-white rounded-2xl overflow-hidden shadow-lg w-56">
+            <div class="bg-[#00b900] text-white text-center text-xs font-bold py-2">🌱 あおちゃん</div>
+            <div class="p-4 space-y-3 bg-gray-50">
+              <!-- 画像を送る -->
+              <div class="flex justify-end">
+                <div class="bg-[#dcf8c6] rounded-2xl rounded-tr-sm px-3 py-2 text-xs flex items-center gap-2">
+                  <span>📸</span> <span class="text-gray-600">レシート送信</span>
+                </div>
+              </div>
+              <!-- OCR結果 -->
+              <div class="flex gap-2 items-start">
+                <div class="w-6 h-6 rounded-full bg-green-500 flex-shrink-0 flex items-center justify-center text-white text-[9px] font-bold">あ</div>
+                <div class="bg-white rounded-2xl rounded-tl-sm px-3 py-2 text-[10px] shadow-sm max-w-[140px] leading-relaxed">
+                  📸 読み取り完了！<br/>
+                  🏪 ドトールコーヒー<br/>
+                  💰 <b>650円</b><br/>
+                  💼 <span class="text-blue-600">事業費 (外食)</span><br/>
+                  <span class="text-gray-400 text-[9px]">登録しますか？</span>
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <div class="bg-[#dcf8c6] rounded-2xl rounded-tr-sm px-3 py-1.5 text-xs">はい✅</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="w-full md:w-1/2">
+          <div class="inline-flex items-center gap-2 bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full mb-3">STEP 2</div>
+          <h3 class="text-2xl font-black text-gray-900 mb-3">レシートを写真で送る</h3>
+          <p class="text-gray-600 leading-relaxed mb-4">スーパー・コンビニ・カフェ・取引先との会食…どんなレシートでも OK。AI が自動で読み取り、「これ経費になりますか？」も一緒に判定します。</p>
+          <div class="bg-green-50 rounded-xl px-4 py-3 text-sm text-green-700 inline-flex items-center gap-2">
+            🤖 個人費・事業費を <b>自動で振り分け</b>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent reveal"></div>
+
+      <!-- ステップ3 -->
+      <div class="flex flex-col md:flex-row items-center gap-8 reveal">
+        <div class="w-full md:w-1/2 order-2 md:order-1">
+          <div class="inline-flex items-center gap-2 bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1 rounded-full mb-3">STEP 3</div>
+          <h3 class="text-2xl font-black text-gray-900 mb-3">あとは通知を受け取るだけ</h3>
+          <p class="text-gray-600 leading-relaxed mb-4">週次サマリー、月次レポート、補助金の新着情報、確定申告の期限リマインダー…すべて LINE に届きます。気になることはいつでも質問できます。</p>
+          <div class="bg-purple-50 rounded-xl px-4 py-3 text-sm text-purple-700 inline-flex items-center gap-2">
+            🔔 大事な情報を <b>見逃さない</b>
+          </div>
+        </div>
+        <div class="w-full md:w-1/2 order-1 md:order-2 flex justify-center">
+          <div class="bg-white rounded-2xl p-5 shadow-lg w-64 space-y-3">
+            <!-- 通知カード群 -->
+            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 flex items-start gap-3">
+              <span class="text-2xl">🎁</span>
+              <div class="text-xs">
+                <div class="font-bold text-yellow-800">補助金新着情報</div>
+                <div class="text-gray-500 mt-0.5">IT導入補助金 申請受付開始！<br/><b class="text-red-500">締切 4/30</b></div>
+              </div>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-3">
+              <span class="text-2xl">📊</span>
+              <div class="text-xs">
+                <div class="font-bold text-blue-800">3月 月次レポート</div>
+                <div class="text-gray-500 mt-0.5">生活費 <b>182,400円</b><br/>事業費 <b>94,700円</b> ✅ 予算内</div>
+              </div>
+            </div>
+            <div class="bg-red-50 border border-red-200 rounded-xl p-3 flex items-start gap-3">
+              <span class="text-2xl">⚠️</span>
+              <div class="text-xs">
+                <div class="font-bold text-red-700">確定申告 あと14日！</div>
+                <div class="text-gray-500 mt-0.5">3/17 締切。準備リストを確認しましょう</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ AGENT TEAM ═══════════════════════════════════ -->
+<section class="py-20 bg-white">
+  <div class="max-w-5xl mx-auto px-4">
+    <p class="text-sm font-bold text-blue-600 tracking-widest uppercase mb-3 text-center reveal">AI エージェントチーム</p>
+    <h2 class="text-3xl font-black text-center text-gray-900 mb-4 reveal">5つの専門 AI があなたをサポート</h2>
+    <p class="text-center text-gray-500 mb-12 reveal">質問の内容に応じて、最適な専門エージェントが自動で対応します</p>
+
+    <div class="grid md:grid-cols-5 gap-4">
+      <div class="text-center reveal">
+        <div class="w-14 h-14 mx-auto bg-blue-100 rounded-2xl flex items-center justify-center text-2xl mb-3">🎯</div>
+        <div class="text-sm font-black text-gray-800 mb-1">オーケストレーター</div>
+        <div class="text-xs text-gray-500">各エージェントを協調させる司令塔</div>
+      </div>
+      <div class="text-center reveal">
+        <div class="w-14 h-14 mx-auto bg-green-100 rounded-2xl flex items-center justify-center text-2xl mb-3">📋</div>
+        <div class="text-sm font-black text-gray-800 mb-1">税務アドバイザー</div>
+        <div class="text-xs text-gray-500">青色申告・経費・インボイス専門</div>
+      </div>
+      <div class="text-center reveal">
+        <div class="w-14 h-14 mx-auto bg-purple-100 rounded-2xl flex items-center justify-center text-2xl mb-3">🏭</div>
+        <div class="text-sm font-black text-gray-800 mb-1">業種別アドバイザー</div>
+        <div class="text-xs text-gray-500">IT・製造・飲食など10業種対応</div>
+      </div>
+      <div class="text-center reveal">
+        <div class="w-14 h-14 mx-auto bg-yellow-100 rounded-2xl flex items-center justify-center text-2xl mb-3">🔍</div>
+        <div class="text-sm font-black text-gray-800 mb-1">補助金リサーチャー</div>
+        <div class="text-xs text-gray-500">Web を定期巡回して最新情報を収集</div>
+      </div>
+      <div class="text-center reveal">
+        <div class="w-14 h-14 mx-auto bg-pink-100 rounded-2xl flex items-center justify-center text-2xl mb-3">💰</div>
+        <div class="text-sm font-black text-gray-800 mb-1">家計簿アドバイザー</div>
+        <div class="text-xs text-gray-500">収支分析・予算管理・節約提案</div>
+      </div>
+    </div>
+
+    <!-- フロー図 -->
+    <div class="mt-12 bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl p-6 reveal">
+      <div class="flex flex-wrap justify-center items-center gap-3 text-sm font-medium text-gray-700">
+        <div class="bg-white rounded-xl px-4 py-2 shadow-sm flex items-center gap-2">
+          📱 あなたの質問
+        </div>
+        <span class="text-blue-400 text-xl">→</span>
+        <div class="bg-blue-600 text-white rounded-xl px-4 py-2 shadow flex items-center gap-2">
+          🎯 オーケストレーター
+        </div>
+        <span class="text-blue-400 text-xl">→</span>
+        <div class="flex flex-wrap gap-2">
+          <div class="bg-white rounded-xl px-3 py-1.5 shadow-sm text-xs">📋 税務</div>
+          <div class="bg-white rounded-xl px-3 py-1.5 shadow-sm text-xs">🏭 業種</div>
+          <div class="bg-white rounded-xl px-3 py-1.5 shadow-sm text-xs">🔍 補助金</div>
+        </div>
+        <span class="text-blue-400 text-xl">→</span>
+        <div class="bg-green-600 text-white rounded-xl px-4 py-2 shadow flex items-center gap-2">
+          ✅ 統合回答
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ PRICING ═══════════════════════════════════ -->
+<section id="pricing" class="py-20 section-gradient">
+  <div class="max-w-5xl mx-auto px-4">
+    <p class="text-sm font-bold text-blue-600 tracking-widest uppercase mb-3 text-center reveal">料金</p>
+    <h2 class="text-3xl font-black text-center text-gray-900 mb-3 reveal">シンプルな料金体系</h2>
+    <p class="text-center text-gray-500 mb-12 reveal">利用量に応じた従量制。税理士に頼むより圧倒的にリーズナブル。</p>
+
+    <div class="grid md:grid-cols-3 gap-6">
+
+      <!-- フリー -->
+      <div class="price-card bg-white rounded-2xl p-7 shadow-sm border border-gray-100 reveal">
+        <div class="text-sm font-bold text-gray-500 mb-2">🌱 スターター</div>
+        <div class="flex items-end gap-1 mb-1">
+          <span class="text-4xl font-black text-gray-900">¥0</span>
+          <span class="text-gray-400 text-sm mb-1.5">/月</span>
+        </div>
+        <p class="text-xs text-gray-400 mb-6">自分ひとりで試したい方に</p>
+        <ul class="space-y-2.5 text-sm text-gray-600 mb-8">
+          <li class="flex items-center gap-2"><span class="text-green-500">✓</span> レシートスキャン 20枚/月</li>
+          <li class="flex items-center gap-2"><span class="text-green-500">✓</span> 家計簿・家計簿記録</li>
+          <li class="flex items-center gap-2"><span class="text-green-500">✓</span> LINE 通知 200通/月</li>
+          <li class="flex items-center gap-2"><span class="text-green-500">✓</span> 月次レポート</li>
+          <li class="flex items-center gap-2"><span class="text-gray-300">✗</span> 補助金リサーチ</li>
+          <li class="flex items-center gap-2"><span class="text-gray-300">✗</span> 税務アドバイス</li>
+        </ul>
+        <a href="#cta" class="block text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition text-sm">
+          無料で始める
+        </a>
+      </div>
+
+      <!-- スタンダード（おすすめ） -->
+      <div class="price-card price-popular rounded-2xl p-7 shadow-xl relative reveal">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 text-xs font-black px-4 py-1 rounded-full">
+          ⭐ 一番人気
+        </div>
+        <div class="text-sm font-bold text-blue-200 mb-2">💼 スタンダード</div>
+        <div class="flex items-end gap-1 mb-1">
+          <span class="text-4xl font-black">¥1,500</span>
+          <span class="text-blue-200 text-sm mb-1.5">/月</span>
+        </div>
+        <p class="text-xs text-blue-200 mb-6">個人事業主・フリーランスに最適</p>
+        <ul class="space-y-2.5 text-sm text-blue-100 mb-8">
+          <li class="flex items-center gap-2"><span class="text-green-300">✓</span> レシートスキャン <b class="text-white">無制限</b></li>
+          <li class="flex items-center gap-2"><span class="text-green-300">✓</span> 家計簿・経費管理 完全版</li>
+          <li class="flex items-center gap-2"><span class="text-green-300">✓</span> LINE 通知 無制限</li>
+          <li class="flex items-center gap-2"><span class="text-green-300">✓</span> 月次・週次レポート</li>
+          <li class="flex items-center gap-2"><span class="text-green-300">✓</span> <b class="text-white">補助金リサーチ</b>（週次）</li>
+          <li class="flex items-center gap-2"><span class="text-green-300">✓</span> <b class="text-white">税務アドバイス</b>（無制限）</li>
+          <li class="flex items-center gap-2"><span class="text-green-300">✓</span> 確定申告サポート</li>
+        </ul>
+        <a href="#cta" class="block text-center bg-white text-blue-700 hover:bg-blue-50 font-black py-3 rounded-xl transition text-sm">
+          14日間無料で試す
+        </a>
+      </div>
+
+      <!-- ビジネス -->
+      <div class="price-card bg-white rounded-2xl p-7 shadow-sm border border-gray-100 reveal">
+        <div class="text-sm font-bold text-gray-500 mb-2">🚀 ビジネス</div>
+        <div class="flex items-end gap-1 mb-1">
+          <span class="text-4xl font-black text-gray-900">¥4,800</span>
+          <span class="text-gray-400 text-sm mb-1.5">/月</span>
+        </div>
+        <p class="text-xs text-gray-400 mb-6">複数クライアントを抱える事業者向け</p>
+        <ul class="space-y-2.5 text-sm text-gray-600 mb-8">
+          <li class="flex items-center gap-2"><span class="text-green-500">✓</span> スタンダードの全機能</li>
+          <li class="flex items-center gap-2"><span class="text-green-500">✓</span> <b>5ユーザーまで</b> 対応</li>
+          <li class="flex items-center gap-2"><span class="text-green-500">✓</span> 補助金リサーチ（毎日更新）</li>
+          <li class="flex items-center gap-2"><span class="text-green-500">✓</span> 総合レポート自動生成</li>
+          <li class="flex items-center gap-2"><span class="text-green-500">✓</span> 優先サポート</li>
+          <li class="flex items-center gap-2"><span class="text-green-500">✓</span> API 連携（会計ソフト等）</li>
+        </ul>
+        <a href="#cta" class="block text-center bg-gray-900 hover:bg-gray-700 text-white font-bold py-3 rounded-xl transition text-sm">
+          14日間無料で試す
+        </a>
+      </div>
+
+    </div>
+
+    <!-- vs 税理士 -->
+    <div class="mt-12 bg-white rounded-2xl p-6 shadow-sm reveal">
+      <h3 class="font-black text-center text-gray-800 mb-5">税理士・他サービスとの比較</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-center">
+          <thead>
+            <tr class="border-b border-gray-100">
+              <th class="text-left text-gray-500 font-medium pb-3 pr-4">機能</th>
+              <th class="pb-3 px-2 font-bold text-blue-700">あおちゃん</th>
+              <th class="pb-3 px-2 text-gray-400">会計ソフト</th>
+              <th class="pb-3 px-2 text-gray-400">税理士</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+            <tr>
+              <td class="text-left py-2.5 text-gray-700 pr-4">レシートOCR</td>
+              <td class="py-2.5 text-green-500">✅</td>
+              <td class="py-2.5 text-green-500">✅</td>
+              <td class="py-2.5 text-gray-300">–</td>
+            </tr>
+            <tr>
+              <td class="text-left py-2.5 text-gray-700 pr-4">個人費・事業費の自動振り分け</td>
+              <td class="py-2.5 text-green-500">✅</td>
+              <td class="py-2.5 text-gray-300">–</td>
+              <td class="py-2.5 text-green-500">✅</td>
+            </tr>
+            <tr>
+              <td class="text-left py-2.5 text-gray-700 pr-4">税務アドバイス（即答）</td>
+              <td class="py-2.5 text-green-500">✅</td>
+              <td class="py-2.5 text-gray-300">–</td>
+              <td class="py-2.5 text-yellow-400">△（要予約）</td>
+            </tr>
+            <tr>
+              <td class="text-left py-2.5 text-gray-700 pr-4">補助金の自動リサーチ</td>
+              <td class="py-2.5 text-green-500">✅</td>
+              <td class="py-2.5 text-gray-300">–</td>
+              <td class="py-2.5 text-yellow-400">△</td>
+            </tr>
+            <tr>
+              <td class="text-left py-2.5 text-gray-700 pr-4">LINE で完結</td>
+              <td class="py-2.5 text-green-500">✅</td>
+              <td class="py-2.5 text-gray-300">–</td>
+              <td class="py-2.5 text-gray-300">–</td>
+            </tr>
+            <tr>
+              <td class="text-left py-2.5 font-bold text-gray-900 pr-4">月額費用</td>
+              <td class="py-2.5 font-black text-blue-700">¥1,500〜</td>
+              <td class="py-2.5 text-gray-500">¥2,000〜</td>
+              <td class="py-2.5 text-gray-500">¥20,000〜</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ TESTIMONIALS ═══════════════════════════════════ -->
+<section class="py-20 bg-white">
+  <div class="max-w-5xl mx-auto px-4">
+    <p class="text-sm font-bold text-blue-600 tracking-widest uppercase mb-3 text-center reveal">ユーザーの声</p>
+    <h2 class="text-3xl font-black text-center text-gray-900 mb-12 reveal">使ってみた方の感想</h2>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 reveal">
+        <div class="flex items-center gap-1 text-yellow-400 mb-4">★★★★★</div>
+        <p class="text-sm text-gray-700 leading-relaxed mb-4">「レシートをパシャって送るだけで家計簿が完成するの、本当に感動。経費かどうかも一発で判定してくれるし、もう手入力には戻れない」</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-blue-700 font-bold text-sm">田</div>
+          <div>
+            <div class="text-sm font-bold text-gray-800">田中 M さん</div>
+            <div class="text-xs text-gray-400">フリーランスデザイナー・東京</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 reveal">
+        <div class="flex items-center gap-1 text-yellow-400 mb-4">★★★★★</div>
+        <p class="text-sm text-gray-700 leading-relaxed mb-4">「IT導入補助金の申請、あおちゃんのアラートで気づいて間に合いました！毎週ちゃんと調べてくれてるのが本当に助かる。50万円ゲット！」</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center text-green-700 font-bold text-sm">鈴</div>
+          <div>
+            <div class="text-sm font-bold text-gray-800">鈴木 H さん</div>
+            <div class="text-xs text-gray-400">飲食店オーナー・大阪</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 reveal">
+        <div class="flex items-center gap-1 text-yellow-400 mb-4">★★★★☆</div>
+        <p class="text-sm text-gray-700 leading-relaxed mb-4">「確定申告前に慌てて領収書整理してたのが嘘みたい。毎月コツコツ記録できてて、今年は余裕で青色申告できそう。65万円控除もしっかり使えた！」</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center text-purple-700 font-bold text-sm">山</div>
+          <div>
+            <div class="text-sm font-bold text-gray-800">山田 K さん</div>
+            <div class="text-xs text-gray-400">個人事業主・IT業・神奈川</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ FAQ ═══════════════════════════════════ -->
+<section id="faq" class="py-20 section-gradient">
+  <div class="max-w-3xl mx-auto px-4">
+    <p class="text-sm font-bold text-blue-600 tracking-widest uppercase mb-3 text-center reveal">よくある質問</p>
+    <h2 class="text-3xl font-black text-center text-gray-900 mb-12 reveal">FAQ</h2>
+
+    <div class="space-y-4" id="faq-list">
+      <details class="bg-white rounded-2xl shadow-sm overflow-hidden reveal group">
+        <summary class="px-6 py-4 font-bold text-gray-800 cursor-pointer flex justify-between items-center list-none">
+          確定申告・青色申告の知識がなくても使えますか？
+          <span class="text-blue-400 group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">
+          はい、もちろんです。「経費になりますか？」「青色申告ってなんですか？」など、基本的な質問から何でも答えます。専門用語は使わず、わかりやすく説明します。
+        </div>
+      </details>
+
+      <details class="bg-white rounded-2xl shadow-sm overflow-hidden reveal group">
+        <summary class="px-6 py-4 font-bold text-gray-800 cursor-pointer flex justify-between items-center list-none">
+          レシートの読み取り精度はどのくらいですか？
+          <span class="text-blue-400 group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">
+          Claude AI の Vision 機能を使用しており、鮮明な画像であれば約98%の精度で読み取れます。手書きレシート、感熱紙のレシート、電子レシートも対応しています。読み取りに自信がない場合は「要確認」として通知します。
+        </div>
+      </details>
+
+      <details class="bg-white rounded-2xl shadow-sm overflow-hidden reveal group">
+        <summary class="px-6 py-4 font-bold text-gray-800 cursor-pointer flex justify-between items-center list-none">
+          個人情報・レシート情報のセキュリティは大丈夫ですか？
+          <span class="text-blue-400 group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">
+          通信はすべて HTTPS/TLS で暗号化されています。データは国内サーバーに保存し、第三者への提供は一切行いません。また、画像データは処理後に原則削除されます。詳しくはプライバシーポリシーをご確認ください。
+        </div>
+      </details>
+
+      <details class="bg-white rounded-2xl shadow-sm overflow-hidden reveal group">
+        <summary class="px-6 py-4 font-bold text-gray-800 cursor-pointer flex justify-between items-center list-none">
+          既存の会計ソフト（freee・マネーフォワードなど）と併用できますか？
+          <span class="text-blue-400 group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">
+          はい、全く問題ありません。あおちゃんで日々の記録・分類を行い、月末に会計ソフトへインポートする使い方が人気です。CSV エクスポート機能を使えばスムーズに連携できます。
+        </div>
+      </details>
+
+      <details class="bg-white rounded-2xl shadow-sm overflow-hidden reveal group">
+        <summary class="px-6 py-4 font-bold text-gray-800 cursor-pointer flex justify-between items-center list-none">
+          補助金の申請代行もしてもらえますか？
+          <span class="text-blue-400 group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">
+          申請代行自体は行っていませんが、どの補助金が使えるか・申請方法・必要書類・締切日などの情報を詳しく提供します。申請書の書き方についても相談に乗ります。
+        </div>
+      </details>
+
+      <details class="bg-white rounded-2xl shadow-sm overflow-hidden reveal group">
+        <summary class="px-6 py-4 font-bold text-gray-800 cursor-pointer flex justify-between items-center list-none">
+          解約はいつでもできますか？
+          <span class="text-blue-400 group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">
+          はい、いつでも解約できます。違約金・解約手数料は一切ありません。データのエクスポートも無料で行えます。
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ CTA ═══════════════════════════════════ -->
+<section id="cta" class="py-20 hero-gradient relative overflow-hidden">
+  <div class="absolute top-0 right-0 w-96 h-96 bg-teal-400/10 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-0 left-0 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl"></div>
+
+  <div class="max-w-2xl mx-auto px-4 text-center relative">
+    <div class="text-6xl mb-6 float-anim reveal">🌱</div>
+    <h2 class="text-3xl sm:text-4xl font-black text-white mb-4 reveal">
+      青色申告、今年こそ<br />スッキリ終わらせよう
+    </h2>
+    <p class="text-blue-100 mb-8 text-lg reveal">
+      14日間は完全無料。クレジットカード不要。<br />
+      LINE を開いて、QR コードを読み取るだけで始められます。
+    </p>
+
+    <div class="flex flex-col sm:flex-row justify-center gap-4 reveal">
+      <a href="#" class="pulse-wrap justify-center">
+        <span class="relative z-10 line-btn text-white font-black px-10 py-4 rounded-full flex items-center gap-3 text-lg">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.92 2 10.76c0 3.09 1.74 5.82 4.38 7.48L5.5 22l4.13-2.17A11.3 11.3 0 0 0 12 20c5.52 0 10-3.92 10-8.76C22 5.92 17.52 2 12 2z"/></svg>
+          LINE で友だち追加（無料）
+        </span>
+      </a>
+    </div>
+
+    <p class="text-blue-200 text-xs mt-5 reveal">
+      🔒 個人情報は暗号化して保護されます　|　いつでも退会できます
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ FOOTER ═══════════════════════════════════ -->
+<footer class="bg-gray-900 text-gray-400 py-12">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="grid md:grid-cols-4 gap-8 mb-8">
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-2xl">🌱</span>
+          <span class="font-black text-white text-lg">あおちゃん</span>
+        </div>
+        <p class="text-sm leading-relaxed">AI 青色申告アシスタント。個人事業主・フリーランスの経理を LINE でまるごとサポートします。</p>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-3 text-sm">機能</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#features" class="hover:text-white transition-colors">レシートOCR</a></li>
+          <li><a href="#features" class="hover:text-white transition-colors">経費振り分け</a></li>
+          <li><a href="#features" class="hover:text-white transition-colors">補助金リサーチ</a></li>
+          <li><a href="#features" class="hover:text-white transition-colors">確定申告サポート</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-3 text-sm">料金・サポート</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#pricing" class="hover:text-white transition-colors">料金プラン</a></li>
+          <li><a href="#faq" class="hover:text-white transition-colors">FAQ</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">お問い合わせ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-3 text-sm">法的情報</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white transition-colors">利用規約</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">プライバシーポリシー</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">特定商取引法</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-gray-700 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <p class="text-xs">© 2025 あおちゃん AI 青色申告アシスタント. All rights reserved.</p>
+      <p class="text-xs">Powered by <span class="text-blue-400">Claude AI (Anthropic)</span> × <span class="text-green-400">LINE Messaging API</span></p>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════ JS ═══════════════════════════════════ -->
+<script>
+  // スクロールフェードイン
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // FAQ アコーディオン（スムーズ）
+  document.querySelectorAll('details').forEach(d => {
+    d.addEventListener('toggle', () => {
+      if (d.open) {
+        document.querySelectorAll('details').forEach(other => {
+          if (other !== d) other.open = false;
+        });
+      }
+    });
+  });
+
+  // スムーズスクロール
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
