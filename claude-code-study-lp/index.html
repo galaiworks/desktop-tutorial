@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code勉強会 | AIペアプログラミングを体験しよう</title>
+  <meta name="description" content="Claude Codeを使ったAIペアプログラミングを実際に体験できる勉強会。初心者から上級者まで、実践的なハンズオンで学べます。">
+  <style>
+    :root {
+      --primary: #D97706;
+      --primary-dark: #B45309;
+      --accent: #F59E0B;
+      --bg-dark: #0F172A;
+      --bg-section: #1E293B;
+      --bg-card: #334155;
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --border: #475569;
+      --gradient-start: #D97706;
+      --gradient-end: #F59E0B;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      line-height: 1.8;
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--text-primary);
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 1.5rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(217, 119, 6, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+      animation: pulse 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+
+    .hero-content {
+      position: relative;
+      max-width: 800px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(217, 119, 6, 0.15);
+      color: var(--accent);
+      padding: 0.4rem 1.2rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(217, 119, 6, 0.3);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .terminal-preview {
+      background: #0D1117;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: left;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.9rem;
+      margin: 2.5rem auto;
+      max-width: 600px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .terminal-header {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot.red { background: #FF5F57; }
+    .terminal-dot.yellow { background: #FEBC2E; }
+    .terminal-dot.green { background: #28C840; }
+
+    .terminal-line {
+      margin-bottom: 0.3rem;
+      color: var(--text-secondary);
+    }
+
+    .terminal-line .prompt {
+      color: var(--accent);
+    }
+
+    .terminal-line .command {
+      color: var(--text-primary);
+    }
+
+    .terminal-line .output {
+      color: #7DD3FC;
+    }
+
+    /* CTA Button */
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      color: #fff;
+      padding: 1rem 2.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 700;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(217, 119, 6, 0.3);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(217, 119, 6, 0.4);
+    }
+
+    .cta-sub {
+      display: block;
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Sections */
+    section {
+      padding: 5rem 1.5rem;
+    }
+
+    .section-alt {
+      background: var(--bg-section);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-header p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Pain Points */
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .pain-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .pain-card .icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .pain-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .pain-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* What You'll Learn */
+    .learn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .learn-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .learn-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+    }
+
+    .learn-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: rgba(217, 119, 6, 0.2);
+      line-height: 1;
+      margin-bottom: 0.75rem;
+    }
+
+    .learn-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .learn-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* Timeline */
+    .timeline {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      align-items: flex-start;
+    }
+
+    .timeline-time {
+      min-width: 80px;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 0.95rem;
+      padding-top: 0.2rem;
+    }
+
+    .timeline-content {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .timeline-content h3 {
+      font-size: 1.05rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .timeline-content p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* Target Audience */
+    .target-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .target-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+
+    .target-check {
+      color: var(--accent);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .target-item p {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .target-item strong {
+      color: var(--text-primary);
+    }
+
+    /* Event Details */
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .detail-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .detail-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .detail-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .detail-note {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    /* FAQ */
+    .faq-list {
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      width: 100%;
+      background: var(--bg-card);
+      border: none;
+      color: var(--text-primary);
+      padding: 1.25rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+
+    .faq-question:hover {
+      background: #3B4A5E;
+    }
+
+    .faq-arrow {
+      transition: transform 0.3s;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .faq-item.open .faq-arrow {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .faq-answer-inner {
+      padding: 0 1.5rem 1.25rem;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      text-align: center;
+      padding: 5rem 1.5rem;
+      position: relative;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(217, 119, 6, 0.08) 0%, transparent 60%);
+    }
+
+    .cta-section .container {
+      position: relative;
+    }
+
+    .cta-section h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .cta-section p {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+
+    .seats-left {
+      display: inline-block;
+      background: rgba(239, 68, 68, 0.15);
+      color: #FCA5A5;
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: var(--text-primary);
+    }
+
+    /* Mobile Nav */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .nav-toggle {
+        display: block;
+      }
+
+      nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(15, 23, 42, 0.98);
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      nav.open {
+        display: block;
+      }
+
+      nav a {
+        display: block;
+        margin: 0;
+        padding: 0.75rem 1rem;
+      }
+
+      .timeline-item {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <a href="#" class="logo">Claude Code <span>勉強会</span></a>
+      <button class="nav-toggle" onclick="document.querySelector('nav').classList.toggle('open')" aria-label="メニュー">&#9776;</button>
+      <nav>
+        <a href="#pain">課題</a>
+        <a href="#learn">内容</a>
+        <a href="#schedule">タイムテーブル</a>
+        <a href="#details">開催概要</a>
+        <a href="#faq">FAQ</a>
+        <a href="#apply">申し込み</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="badge">Hands-on Workshop</div>
+      <h1>
+        <span class="highlight">Claude Code</span>で<br>
+        開発生産性を10倍にする
+      </h1>
+      <p>AIペアプログラミングの最前線を体験。実践ハンズオンで、明日からの開発が変わります。</p>
+
+      <div class="terminal-preview">
+        <div class="terminal-header">
+          <div class="terminal-dot red"></div>
+          <div class="terminal-dot yellow"></div>
+          <div class="terminal-dot green"></div>
+        </div>
+        <div class="terminal-line"><span class="prompt">$ </span><span class="command">claude</span></div>
+        <div class="terminal-line"><span class="output">? What can I help you with?</span></div>
+        <div class="terminal-line"><span class="prompt">&gt; </span><span class="command">このプロジェクトにログイン機能を追加して</span></div>
+        <div class="terminal-line"><span class="output">I'll add authentication. Let me analyze the codebase...</span></div>
+        <div class="terminal-line"><span class="output">Created 5 files, modified 3 files. Ready for review.</span></div>
+      </div>
+
+      <a href="#apply" class="cta-button">参加を申し込む</a>
+      <span class="cta-sub">先着30名 / 参加費無料</span>
+    </div>
+  </section>
+
+  <!-- Pain Points -->
+  <section id="pain" class="section-alt">
+    <div class="container">
+      <div class="section-header">
+        <h2>こんな課題はありませんか？</h2>
+        <p>多くの開発者がAIコーディングツールで同じ壁にぶつかっています</p>
+      </div>
+      <div class="pain-grid">
+        <div class="pain-card">
+          <div class="icon">&#128566;</div>
+          <h3>ChatGPTにコードを貼り付ける日々</h3>
+          <p>コピー&ペーストの往復に疲れていませんか？コンテキストが途切れて、毎回説明し直す手間がかかります。</p>
+        </div>
+        <div class="pain-card">
+          <div class="icon">&#128534;</div>
+          <h3>AI生成コードが動かない</h3>
+          <p>プロジェクト構造を理解していないAIが生成するコードは、そのままでは動かないことが多く、修正に時間がかかります。</p>
+        </div>
+        <div class="pain-card">
+          <div class="icon">&#128564;</div>
+          <h3>ツールが多すぎて選べない</h3>
+          <p>Copilot、Cursor、Cline...次々と登場するAIツール。どれが自分のワークフローに合うのか判断できません。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What You'll Learn -->
+  <section id="learn">
+    <div class="container">
+      <div class="section-header">
+        <h2>この勉強会で得られること</h2>
+        <p>実践を通じて、Claude Codeの真価を体感しましょう</p>
+      </div>
+      <div class="learn-grid">
+        <div class="learn-card">
+          <div class="learn-number">01</div>
+          <h3>Claude Codeの基本と設計思想</h3>
+          <p>ターミナルネイティブなAIエージェントがなぜ強力なのか。他ツールとの違いと、その設計思想を理解します。</p>
+        </div>
+        <div class="learn-card">
+          <div class="learn-number">02</div>
+          <h3>実践ハンズオン</h3>
+          <p>実際のプロジェクトでClaude Codeを使い、機能追加・バグ修正・リファクタリングを体験。プロンプトのコツも学べます。</p>
+        </div>
+        <div class="learn-card">
+          <div class="learn-number">03</div>
+          <h3>チーム開発への導入戦略</h3>
+          <p>CLAUDE.mdの書き方、Git連携、コードレビューとの組み合わせなど、チームで活用するためのベストプラクティスを共有します。</p>
+        </div>
+        <div class="learn-card">
+          <div class="learn-number">04</div>
+          <h3>高度なワークフロー</h3>
+          <p>マルチファイル編集、テスト駆動開発との連携、CI/CDパイプラインとの統合など、上級者向けのテクニックを紹介します。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Schedule -->
+  <section id="schedule" class="section-alt">
+    <div class="container">
+      <div class="section-header">
+        <h2>タイムテーブル</h2>
+        <p>約3時間の集中ワークショップ</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-time">18:30</div>
+          <div class="timeline-content">
+            <h3>開場・受付</h3>
+            <p>ネットワーキングタイム。環境セットアップのサポートも行います。</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">19:00</div>
+          <div class="timeline-content">
+            <h3>セッション1: Claude Code概論</h3>
+            <p>Claude Codeとは何か、なぜターミナルベースなのか。デモを交えて基本コンセプトを解説。</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">19:30</div>
+          <div class="timeline-content">
+            <h3>セッション2: ハンズオン</h3>
+            <p>実際にClaude Codeを使って開発タスクに取り組みます。メンターがサポートします。</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">20:30</div>
+          <div class="timeline-content">
+            <h3>休憩</h3>
+            <p>軽食とドリンクをご用意しています。</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">20:45</div>
+          <div class="timeline-content">
+            <h3>セッション3: 実践Tips & チーム導入</h3>
+            <p>CLAUDE.mdの書き方、効果的なプロンプト、チーム開発での活用法を共有。</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">21:15</div>
+          <div class="timeline-content">
+            <h3>Q&A・懇親会</h3>
+            <p>参加者同士の交流と質疑応答。個別相談も受け付けます。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Target Audience -->
+  <section id="target">
+    <div class="container">
+      <div class="section-header">
+        <h2>こんな方におすすめ</h2>
+      </div>
+      <div class="target-list">
+        <div class="target-item">
+          <span class="target-check">&#10003;</span>
+          <p><strong>AIコーディングツールに興味がある</strong>エンジニア。まだ使ったことがない方も大歓迎です。</p>
+        </div>
+        <div class="target-item">
+          <span class="target-check">&#10003;</span>
+          <p><strong>Copilot / Cursorは使っている</strong>が、Claude Codeとの違いを知りたい方。</p>
+        </div>
+        <div class="target-item">
+          <span class="target-check">&#10003;</span>
+          <p><strong>チームの開発生産性を向上させたい</strong>テックリード・マネージャーの方。</p>
+        </div>
+        <div class="target-item">
+          <span class="target-check">&#10003;</span>
+          <p><strong>ターミナルでの開発が好き</strong>で、AIエージェントの可能性を探りたい方。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Event Details -->
+  <section id="details" class="section-alt">
+    <div class="container">
+      <div class="section-header">
+        <h2>開催概要</h2>
+      </div>
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="detail-label">日時</div>
+          <div class="detail-value">2026年4月18日(土)</div>
+          <div class="detail-note">18:30 開場 / 19:00 開始</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">会場</div>
+          <div class="detail-value">東京都内</div>
+          <div class="detail-note">詳細は参加者にご案内します</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">定員</div>
+          <div class="detail-value">30名</div>
+          <div class="detail-note">先着順・定員になり次第締切</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">参加費</div>
+          <div class="detail-value">無料</div>
+          <div class="detail-note">軽食・ドリンク付き</div>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-bottom: 1.5rem;">
+        <h3>持ち物</h3>
+      </div>
+      <div class="target-list" style="max-width: 700px; margin: 0 auto;">
+        <div class="target-item">
+          <span class="target-check">&#128187;</span>
+          <p><strong>ノートPC</strong>（Mac / Windows / Linux いずれもOK）</p>
+        </div>
+        <div class="target-item">
+          <span class="target-check">&#128273;</span>
+          <p><strong>Anthropic APIキー</strong>またはClaude Proプラン（事前準備ガイドを送付します）</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <div class="section-header">
+        <h2>よくある質問</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+            <span>プログラミング初心者でも参加できますか？</span>
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">基本的なプログラミング経験（何かしらの言語でコードを書いたことがある）があれば参加可能です。ターミナル操作に不安がある方も、メンターがサポートしますのでご安心ください。</div>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+            <span>事前にClaude Codeをインストールしておく必要がありますか？</span>
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">はい、事前のセットアップをお願いしています。参加確定後に環境構築ガイドをお送りしますので、そちらに沿って準備をお願いします。当日も開場時にサポートスタッフが対応します。</div>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+            <span>Claude Codeの利用に費用はかかりますか？</span>
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Claude CodeはAnthropic APIキーまたはClaude Pro/Max/Teamプランで利用できます。APIキーの場合は従量課金となりますが、ハンズオン中の利用料は少額（数百円程度）です。</div>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+            <span>オンラインでの参加は可能ですか？</span>
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">今回はオフライン（対面）のみの開催です。ハンズオン形式のため、対面でのサポートが効果的と考えています。オンライン開催のリクエストが多い場合は、別途検討いたします。</div>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+            <span>キャンセルは可能ですか？</span>
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">はい、開催3日前まではキャンセル可能です。キャンセル待ちの方もいらっしゃいますので、参加が難しくなった場合は早めにご連絡ください。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="apply" class="cta-section section-alt">
+    <div class="container">
+      <div class="seats-left">残席わずか</div>
+      <h2>Claude Codeで、開発体験を変えよう</h2>
+      <p>AIペアプログラミングの力を実感する3時間。<br>あなたの参加をお待ちしています。</p>
+      <a href="#" class="cta-button" onclick="alert('申し込みフォームのURLをここに設定してください'); return false;">今すぐ参加を申し込む</a>
+      <span class="cta-sub">2026年4月18日(土) 18:30〜 / 東京都内 / 先着30名</span>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Claude Code勉強会 All Rights Reserved.</p>
+  </footer>
+
+</body>
+</html>
