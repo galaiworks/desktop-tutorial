@@ -383,11 +383,12 @@
 
       <div class="feature-card bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-7 border border-yellow-100 reveal">
         <div class="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center text-2xl mb-4">🎁</div>
-        <h3 class="font-black text-gray-900 mb-2">補助金・助成金リサーチ</h3>
-        <p class="text-sm text-gray-600 leading-relaxed">毎週 Web をリサーチし、あなたの業種に合った補助金情報をお届け。締切アラートも届きます。</p>
+        <h3 class="font-black text-gray-900 mb-2">補助金・助成金 毎日クロール</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">税務署・省庁サイトを<b>毎日自動クロール</b>。あなたの業種・地域・規模に合った補助金だけを厳選して LINE でお届け。</p>
         <ul class="mt-4 space-y-1 text-sm text-gray-500">
-          <li>✅ 毎週月曜に自動更新</li>
-          <li>✅ 国・都道府県・民間すべて対象</li>
+          <li>✅ ミラサポplus（中小企業庁）連携</li>
+          <li>✅ J-Net21（中小機構）連携</li>
+          <li>✅ 都道府県・市区町村独自補助金も対象</li>
           <li>✅ 締切 2 週間前にアラート</li>
         </ul>
       </div>
@@ -414,6 +415,134 @@
         </ul>
       </div>
 
+      <div class="feature-card bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl p-7 border border-indigo-100 reveal">
+        <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-2xl mb-4">📚</div>
+        <h3 class="font-black text-gray-900 mb-2">勘定科目 AI 判定</h3>
+        <p class="text-sm text-gray-600 leading-relaxed"><b>簿記ゼロでOK。</b>「これは何費？」「どこに入れる？」チャットで質問するだけで、勘定科目と申告書の記入欄まで即答します。</p>
+        <ul class="mt-4 space-y-1 text-sm text-gray-500">
+          <li>✅ 勘定科目を自動で決定</li>
+          <li>✅ 按分計算も自動提案</li>
+          <li>✅ 申告書の記入欄まで案内</li>
+          <li>✅ 「経費になる？」判定も即答</li>
+        </ul>
+      </div>
+
+      <div class="feature-card bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-7 border border-emerald-100 reveal">
+        <div class="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center text-2xl mb-4">💴</div>
+        <h3 class="font-black text-gray-900 mb-2">節税シミュレーション</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">あなたの収入・経費データから、使える控除・節税策を自動計算。「あと〇万円節税できます」と具体的にアドバイス。</p>
+        <ul class="mt-4 space-y-1 text-sm text-gray-500">
+          <li>✅ 青色申告 65万円控除の最大活用</li>
+          <li>✅ 小規模企業共済・iDeCo 提案</li>
+          <li>✅ 経費計上漏れチェック</li>
+        </ul>
+      </div>
+
+      <div class="feature-card bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-7 border border-orange-100 reveal">
+        <div class="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center text-2xl mb-4">📋</div>
+        <h3 class="font-black text-gray-900 mb-2">インボイス・電帳法チェック</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">インボイス制度・電子帳簿保存法への対応状況を自動チェック。法改正情報もリアルタイムで通知します。</p>
+        <ul class="mt-4 space-y-1 text-sm text-gray-500">
+          <li>✅ インボイス登録番号の確認</li>
+          <li>✅ 電帳法の保存要件チェック</li>
+          <li>✅ 法改正トレンドの自動通知</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ KANJOU DEMO ═══════════════════════════════════ -->
+<section class="py-20 section-gradient">
+  <div class="max-w-5xl mx-auto px-4">
+    <p class="text-sm font-bold text-indigo-600 tracking-widest uppercase mb-3 text-center reveal">簿記ゼロでOK</p>
+    <h2 class="text-3xl font-black text-center text-gray-900 mb-4 reveal">「これ、何費ですか？」をLINEで聞くだけ</h2>
+    <p class="text-center text-gray-500 mb-12 reveal">勘定科目・申告書の記入欄・経費判定まで、AIが即答します</p>
+
+    <div class="grid md:grid-cols-2 gap-8 items-center">
+      <!-- チャットデモ -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden reveal">
+        <div class="bg-[#00b900] text-white text-center text-sm font-bold py-3">🌱 あおちゃん</div>
+        <div class="p-5 space-y-4 bg-gray-50 min-h-[360px]">
+
+          <!-- Q1 -->
+          <div class="flex justify-end">
+            <div class="chat-bubble-right px-4 py-2.5 text-sm max-w-[200px]">カフェで打ち合わせしました。1,500円。これって経費になりますか？</div>
+          </div>
+          <div class="flex gap-2 items-start">
+            <div class="w-7 h-7 rounded-full bg-green-500 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">あ</div>
+            <div class="chat-bubble-bot px-4 py-2.5 text-sm max-w-[220px] leading-relaxed">
+              ✅ <b>経費になります！</b><br/>
+              勘定科目：<b class="text-indigo-700">会議費</b><br/>
+              申告書：第一表 <b class="text-blue-700">経費欄</b> に記入<br/>
+              <span class="text-xs text-gray-400">※相手の名前もメモしておくと安心</span>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="flex justify-end">
+            <div class="chat-bubble-right px-4 py-2.5 text-sm max-w-[200px]">自宅兼仕事場の家賃 8万円は？</div>
+          </div>
+          <div class="flex gap-2 items-start">
+            <div class="w-7 h-7 rounded-full bg-green-500 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">あ</div>
+            <div class="chat-bubble-bot px-4 py-2.5 text-sm max-w-[230px] leading-relaxed">
+              📐 <b>按分で経費計上できます</b><br/>
+              勘定科目：<b class="text-indigo-700">地代家賃</b><br/>
+              仕事部屋が全体の30%なら<br/>
+              <b class="text-green-700">¥24,000 が経費</b><br/>
+              <span class="text-xs text-gray-400">図面があれば比率を自動計算します</span>
+            </div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="flex justify-end">
+            <div class="chat-bubble-right px-4 py-2.5 text-sm max-w-[200px]">MacBook 18万円買いました</div>
+          </div>
+          <div class="flex gap-2 items-start">
+            <div class="w-7 h-7 rounded-full bg-green-500 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">あ</div>
+            <div class="chat-bubble-bot px-4 py-2.5 text-sm max-w-[230px] leading-relaxed">
+              💻 <b>減価償却の対象です</b><br/>
+              勘定科目：<b class="text-indigo-700">工具器具備品</b><br/>
+              耐用年数：<b>4年</b>（年 ¥45,000）<br/>
+              青色申告なら<b class="text-green-700">一括償却も可能</b><br/>
+              <span class="text-xs text-gray-400">どちらがお得か計算しますか？</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 説明 -->
+      <div class="space-y-6 reveal">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-indigo-100">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-xl flex-shrink-0">📚</div>
+            <div>
+              <h3 class="font-black text-gray-900 mb-1">勘定科目を自動で決定</h3>
+              <p class="text-sm text-gray-500 leading-relaxed">「会議費」「消耗品費」「地代家賃」…迷う必要ゼロ。AIがレシートの内容から最適な勘定科目を自動判定します。</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-blue-100">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-xl flex-shrink-0">📄</div>
+            <div>
+              <h3 class="font-black text-gray-900 mb-1">申告書の記入欄まで案内</h3>
+              <p class="text-sm text-gray-500 leading-relaxed">「この数字、どこに書けばいい？」をその場で解決。青色申告決算書・確定申告書の該当欄を丁寧に案内します。</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-green-100">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-xl flex-shrink-0">💰</div>
+            <div>
+              <h3 class="font-black text-gray-900 mb-1">経費計上漏れを防ぐ</h3>
+              <p class="text-sm text-gray-500 leading-relaxed">「これも経費になる！」を見逃さない。月末に経費チェックリストを送り、申告前に漏れをゼロにします。</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -523,6 +652,189 @@
                 <div class="font-bold text-red-700">確定申告 あと14日！</div>
                 <div class="text-gray-500 mt-0.5">3/17 締切。準備リストを確認しましょう</div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SUBSIDY CRAWL ═══════════════════════════════════ -->
+<section class="py-20 bg-white">
+  <div class="max-w-5xl mx-auto px-4">
+    <p class="text-sm font-bold text-yellow-600 tracking-widest uppercase mb-3 text-center reveal">補助金・助成金</p>
+    <h2 class="text-3xl font-black text-center text-gray-900 mb-4 reveal">税務署・省庁サイトを毎日クロール</h2>
+    <p class="text-center text-gray-500 mb-12 reveal">あなたが気づかなかった「使える補助金」を、AIが毎日調べてLINEで届けます</p>
+
+    <!-- クロール対象 -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-5 text-center border border-blue-100 reveal">
+        <div class="text-3xl mb-2">🏛️</div>
+        <div class="font-black text-gray-800 text-sm mb-1">ミラサポplus</div>
+        <div class="text-xs text-gray-500 leading-relaxed">経済産業省・中小企業庁<br/>国の補助金を網羅</div>
+        <div class="mt-3 inline-block bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">毎日更新</div>
+      </div>
+      <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 text-center border border-green-100 reveal">
+        <div class="text-3xl mb-2">📋</div>
+        <div class="font-black text-gray-800 text-sm mb-1">J-Net21</div>
+        <div class="text-xs text-gray-500 leading-relaxed">中小機構<br/>地域別・分野別に検索</div>
+        <div class="mt-3 inline-block bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">毎日更新</div>
+      </div>
+      <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-5 text-center border border-purple-100 reveal">
+        <div class="text-3xl mb-2">👷</div>
+        <div class="font-black text-gray-800 text-sm mb-1">厚生労働省</div>
+        <div class="text-xs text-gray-500 leading-relaxed">雇用・人材育成<br/>助成金専門検索ツール</div>
+        <div class="mt-3 inline-block bg-purple-100 text-purple-700 text-xs font-bold px-2 py-0.5 rounded-full">毎日更新</div>
+      </div>
+      <div class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-5 text-center border border-orange-100 reveal">
+        <div class="text-3xl mb-2">🗾</div>
+        <div class="font-black text-gray-800 text-sm mb-1">都道府県・市区町村</div>
+        <div class="text-xs text-gray-500 leading-relaxed">地域独自の補助金<br/>47都道府県対応</div>
+        <div class="mt-3 inline-block bg-orange-100 text-orange-700 text-xs font-bold px-2 py-0.5 rounded-full">毎週更新</div>
+      </div>
+    </div>
+
+    <!-- フロー -->
+    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-7 reveal">
+      <h3 class="font-black text-gray-800 text-center mb-6">あおちゃんの補助金リサーチ フロー</h3>
+      <div class="flex flex-wrap justify-center items-center gap-3 text-sm">
+        <div class="bg-white rounded-xl px-4 py-3 shadow-sm text-center">
+          <div class="text-xl mb-1">🌐</div>
+          <div class="font-bold text-gray-700 text-xs">省庁・自治体サイト<br/>毎日クロール</div>
+        </div>
+        <div class="text-yellow-400 text-2xl">→</div>
+        <div class="bg-white rounded-xl px-4 py-3 shadow-sm text-center">
+          <div class="text-xl mb-1">🤖</div>
+          <div class="font-bold text-gray-700 text-xs">業種・地域・規模で<br/>AIフィルタリング</div>
+        </div>
+        <div class="text-yellow-400 text-2xl">→</div>
+        <div class="bg-white rounded-xl px-4 py-3 shadow-sm text-center">
+          <div class="text-xl mb-1">📱</div>
+          <div class="font-bold text-gray-700 text-xs">「あなた専用」の<br/>補助金をLINE通知</div>
+        </div>
+        <div class="text-yellow-400 text-2xl">→</div>
+        <div class="bg-yellow-500 text-white rounded-xl px-4 py-3 shadow text-center">
+          <div class="text-xl mb-1">💰</div>
+          <div class="font-bold text-xs">補助金<br/>獲得！</div>
+        </div>
+      </div>
+      <!-- 通知例 -->
+      <div class="mt-6 grid md:grid-cols-3 gap-3">
+        <div class="bg-white rounded-xl p-4 border border-yellow-100 flex items-start gap-3">
+          <span class="text-2xl">🎁</span>
+          <div class="text-xs">
+            <div class="font-bold text-gray-800">IT導入補助金 2025</div>
+            <div class="text-gray-500 mt-0.5">上限 <b class="text-blue-600">450万円</b><br/>締切 <b class="text-red-500">2025/5/31</b></div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-yellow-100 flex items-start gap-3">
+          <span class="text-2xl">🏢</span>
+          <div class="text-xs">
+            <div class="font-bold text-gray-800">小規模事業者持続化補助金</div>
+            <div class="text-gray-500 mt-0.5">上限 <b class="text-blue-600">200万円</b><br/>締切 <b class="text-red-500">2025/6/30</b></div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-yellow-100 flex items-start gap-3">
+          <span class="text-2xl">🗾</span>
+          <div class="text-xs">
+            <div class="font-bold text-gray-800">東京都 創業助成金</div>
+            <div class="text-gray-500 mt-0.5">上限 <b class="text-blue-600">300万円</b><br/>締切 <b class="text-red-500">随時受付</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ TAX SIMULATION ═══════════════════════════════════ -->
+<section class="py-20 section-gradient">
+  <div class="max-w-5xl mx-auto px-4">
+    <p class="text-sm font-bold text-emerald-600 tracking-widest uppercase mb-3 text-center reveal">節税シミュレーション</p>
+    <h2 class="text-3xl font-black text-center text-gray-900 mb-4 reveal">あなたの節税チャンスを可視化</h2>
+    <p class="text-center text-gray-500 mb-12 reveal">収入・経費データをもとに、使える控除・節税策を自動計算します</p>
+
+    <div class="grid md:grid-cols-2 gap-8 items-start">
+      <!-- 節税カード例 -->
+      <div class="space-y-4 reveal">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <div class="text-xs font-bold text-emerald-600 mb-1">青色申告特別控除</div>
+              <div class="font-black text-gray-900">e-Tax 提出で最大</div>
+            </div>
+            <div class="text-3xl font-black text-emerald-600">−65万円</div>
+          </div>
+          <div class="bg-emerald-50 rounded-xl px-3 py-2 text-xs text-emerald-700">あおちゃんが複式帳簿の作成をサポート → 最大控除を確実に獲得</div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-blue-100">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <div class="text-xs font-bold text-blue-600 mb-1">小規模企業共済</div>
+              <div class="font-black text-gray-900">掛金が全額控除</div>
+            </div>
+            <div class="text-3xl font-black text-blue-600">最大−84万円/年</div>
+          </div>
+          <div class="bg-blue-50 rounded-xl px-3 py-2 text-xs text-blue-700">月7万円積立で老後資金 + 全額所得控除。加入検討をサポート</div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-purple-100">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <div class="text-xs font-bold text-purple-600 mb-1">iDeCo（個人型確定拠出年金）</div>
+              <div class="font-black text-gray-900">掛金が全額控除</div>
+            </div>
+            <div class="text-3xl font-black text-purple-600">最大−81.6万円/年</div>
+          </div>
+          <div class="bg-purple-50 rounded-xl px-3 py-2 text-xs text-purple-700">個人事業主は月6.8万円まで。節税額をあなたの収入で試算</div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-orange-100">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <div class="text-xs font-bold text-orange-600 mb-1">経費計上漏れチェック</div>
+              <div class="font-black text-gray-900">見落としがちな経費</div>
+            </div>
+            <div class="text-3xl font-black text-orange-500">平均 +8.2万円</div>
+          </div>
+          <div class="bg-orange-50 rounded-xl px-3 py-2 text-xs text-orange-700">通信費・交通費・書籍代・研修費…気づかず損していた経費を洗い出し</div>
+        </div>
+      </div>
+
+      <!-- 合計シミュレーション -->
+      <div class="reveal">
+        <div class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-7 text-white shadow-xl">
+          <div class="text-sm font-bold text-emerald-200 mb-4">例）年収 500万円の場合の節税効果</div>
+          <div class="space-y-3 mb-6">
+            <div class="flex justify-between items-center border-b border-white/20 pb-3">
+              <span class="text-sm text-emerald-100">青色申告特別控除</span>
+              <span class="font-black">−65万円</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-white/20 pb-3">
+              <span class="text-sm text-emerald-100">小規模企業共済</span>
+              <span class="font-black">−42万円</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-white/20 pb-3">
+              <span class="text-sm text-emerald-100">iDeCo</span>
+              <span class="font-black">−27.6万円</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-white/20 pb-3">
+              <span class="text-sm text-emerald-100">経費漏れ発見</span>
+              <span class="font-black">−8.2万円</span>
+            </div>
+          </div>
+          <div class="bg-white/15 rounded-xl p-4 text-center">
+            <div class="text-sm text-emerald-200 mb-1">節税合計（税率20%換算）</div>
+            <div class="text-5xl font-black mb-1">約28.6万円</div>
+            <div class="text-emerald-200 text-sm">の税金が安くなる可能性</div>
+          </div>
+          <p class="text-xs text-emerald-300 mt-4 text-center">※試算は目安です。詳細は税理士にご確認ください</p>
+        </div>
+
+        <div class="mt-4 bg-white rounded-2xl p-5 shadow-sm border border-emerald-100">
+          <div class="flex items-start gap-3">
+            <div class="text-2xl">🤖</div>
+            <div>
+              <div class="font-black text-gray-900 mb-1 text-sm">あなた専用の節税試算</div>
+              <p class="text-xs text-gray-500 leading-relaxed">「節税シミュレーションして」とLINEで送るだけ。実際の収入・経費データをもとに、あなただけの節税プランを提案します。</p>
             </div>
           </div>
         </div>
@@ -714,6 +1026,24 @@
               <td class="py-2.5 text-gray-300">–</td>
             </tr>
             <tr>
+              <td class="text-left py-2.5 text-gray-700 pr-4">勘定科目の自動判定</td>
+              <td class="py-2.5 text-green-500">✅</td>
+              <td class="py-2.5 text-yellow-400">△（要操作）</td>
+              <td class="py-2.5 text-green-500">✅</td>
+            </tr>
+            <tr>
+              <td class="text-left py-2.5 text-gray-700 pr-4">節税シミュレーション</td>
+              <td class="py-2.5 text-green-500">✅</td>
+              <td class="py-2.5 text-gray-300">–</td>
+              <td class="py-2.5 text-green-500">✅</td>
+            </tr>
+            <tr>
+              <td class="text-left py-2.5 text-gray-700 pr-4">インボイス・電帳法チェック</td>
+              <td class="py-2.5 text-green-500">✅</td>
+              <td class="py-2.5 text-yellow-400">△</td>
+              <td class="py-2.5 text-green-500">✅</td>
+            </tr>
+            <tr>
               <td class="text-left py-2.5 font-bold text-gray-900 pr-4">月額費用</td>
               <td class="py-2.5 font-black text-blue-700">¥1,500〜</td>
               <td class="py-2.5 text-gray-500">¥2,000〜</td>
@@ -838,6 +1168,37 @@
           はい、いつでも解約できます。違約金・解約手数料は一切ありません。データのエクスポートも無料で行えます。
         </div>
       </details>
+
+      <details class="bg-white rounded-2xl shadow-sm overflow-hidden reveal group">
+        <summary class="px-6 py-4 font-bold text-gray-800 cursor-pointer flex justify-between items-center list-none">
+          勘定科目が全くわかりません。それでも使えますか？
+          <span class="text-blue-400 group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">
+          まったく問題ありません。「カフェ代 1,500円」と送るだけで、AIが「会議費」「消耗品費」などの勘定科目を自動で判断します。「申告書のどこに書けばいい？」という質問にも、該当欄を具体的に案内します。簿記の知識ゼロでも使えるよう設計されています。
+        </div>
+      </details>
+
+      <details class="bg-white rounded-2xl shadow-sm overflow-hidden reveal group">
+        <summary class="px-6 py-4 font-bold text-gray-800 cursor-pointer flex justify-between items-center list-none">
+          節税の提案もしてもらえますか？
+          <span class="text-blue-400 group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">
+          はい。「節税シミュレーションして」とLINEで送ると、青色申告特別控除（最大65万円）・小規模企業共済・iDeCo・経費漏れなど、あなたの実際のデータをもとに節税策を提案します。年間で数十万円の差が出ることもあります。
+        </div>
+      </details>
+
+      <details class="bg-white rounded-2xl shadow-sm overflow-hidden reveal group">
+        <summary class="px-6 py-4 font-bold text-gray-800 cursor-pointer flex justify-between items-center list-none">
+          どんな補助金・助成金を調べてくれますか？
+          <span class="text-blue-400 group-open:rotate-180 transition-transform">▾</span>
+        </summary>
+        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">
+          中小企業庁のミラサポplus、中小機構のJ-Net21、厚生労働省の雇用助成金、都道府県・市区町村の独自補助金を毎日クロールしています。登録時に業種・地域・従業員数を設定すると、あなたに該当する補助金だけに絞って通知します。締切2週間前には必ずアラートが届きます。
+        </div>
+      </details>
+
     </div>
   </div>
 </section>
@@ -887,9 +1248,10 @@
         <h4 class="text-white font-bold mb-3 text-sm">機能</h4>
         <ul class="space-y-2 text-sm">
           <li><a href="#features" class="hover:text-white transition-colors">レシートOCR</a></li>
-          <li><a href="#features" class="hover:text-white transition-colors">経費振り分け</a></li>
-          <li><a href="#features" class="hover:text-white transition-colors">補助金リサーチ</a></li>
-          <li><a href="#features" class="hover:text-white transition-colors">確定申告サポート</a></li>
+          <li><a href="#features" class="hover:text-white transition-colors">勘定科目AI判定</a></li>
+          <li><a href="#features" class="hover:text-white transition-colors">補助金毎日クロール</a></li>
+          <li><a href="#features" class="hover:text-white transition-colors">節税シミュレーション</a></li>
+          <li><a href="#features" class="hover:text-white transition-colors">インボイス・電帳法チェック</a></li>
         </ul>
       </div>
       <div>
