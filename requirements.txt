@@ -1,0 +1,5 @@
+anthropic>=0.116.0
+PyYAML>=6.0
+
+# 開発用
+pytest>=8.0

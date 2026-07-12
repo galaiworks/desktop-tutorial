@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 案件の実行時生成物(job.yaml のみバージョン管理する)
+jobs/*/state.json
+jobs/*/work/
+jobs/*/logs/
+jobs/*/output/
+jobs/*/preview/
+
+# 素材・BGM(バイナリはコミットしない)
+assets/**/*.mp4
+assets/**/*.mov
+assets/**/*.mp3
+assets/**/*.wav
+assets/**/*.m4a

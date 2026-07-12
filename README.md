@@ -48,3 +48,17 @@ claude
 ## ライセンス
 
 MIT License
+
+---
+
+## 動画編集パイプライン(Caesura-Coconala Edition)
+
+[docs/LOOP.md](docs/LOOP.md) の要件定義(loop contract)に基づく動画編集パイプラインを同梱しています。
+
+```bash
+pip install -r requirements.txt
+python pipeline/run.py --check-env
+python pipeline/run.py jobs/sample_job
+```
+
+詳細は [docs/PIPELINE.md](docs/PIPELINE.md) を参照してください。
