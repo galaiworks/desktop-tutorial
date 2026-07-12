@@ -1,0 +1,33 @@
+# 案件定義(このファイルはパイプラインからは読み取り専用 — L3)
+# 案件受注・素材受領・DM相談の転記は人間の責任範囲(LOOP.md §2)
+
+job_id: sample_job
+title: サンプル案件(セミナー切り抜き)
+client: 〇〇様(ココナラ)
+
+# 素材(assets/ 配下、読み取り専用)
+source: assets/sample_job/source.mp4
+
+# 尺
+target_duration_sec: 600        # 目標10分
+duration_tolerance_sec: 15      # ±15秒
+
+# テロップ
+telop:
+  max_chars_per_line: 26
+  max_lines: 2
+
+# BGM(ローカルライブラリのみ。外部取得は禁止 — L3)
+bgm:
+  library_dir: assets/bgm
+  mood: 明るめ・落ち着いた
+
+# NG事項(DM相談からの転記)
+ng_items:
+  - 競合サービス名への言及
+  - 受講者の個人名
+  - 価格の断定的な表現
+
+# 編集方針メモ(DM相談からの転記)
+editorial_policy: 冒頭のつかみを重視。専門用語には補足テロップ。
+notes: 依頼主は柔らかいトーンを希望。
