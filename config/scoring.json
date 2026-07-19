@@ -1,0 +1,5 @@
+{
+  "$comment": "総合相性スコアの重み（要件定義書 §5.6）。相性スコア = 数秘相性 × numerologyWeight + Big5相性 × big5Weight。合計が1になるよう正規化して使用。",
+  "numerologyWeight": 0.4,
+  "big5Weight": 0.6
+}
