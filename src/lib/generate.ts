@@ -55,7 +55,11 @@ export function buildPrompt(input: DiagnosisInput): string {
 - 相手: ライフパス${tc.number}（${tc.keywords.join("・")}） / Big5 ${big5Line(input.target.big5)}
 - 数秘相性: ${compat.numerologyScore}点 / Big5相性: ${compat.big5Score}点 / 総合相性: ${compat.totalScore}点（100点満点）
 ## 出力要件
-総合相性${compat.totalScore}点を軸に、${lens}面での2人の噛み合い方・すれ違いやすい点・関係を深めるヒントを300〜500字で。相性が高い点と補い合う点を具体的に。`;
+${
+  input.depth === "teaser"
+    ? `無料版の「さわり」です。総合相性${compat.totalScore}点が何を意味するかを2〜3文（120字以内）で述べ、2人の関係の"核心"には触れずに期待だけを残してください。具体的な攻略法・改善策は書かないでください（続きは公式LINEで渡すため）。`
+    : `総合相性${compat.totalScore}点を軸に、${lens}面での2人の噛み合い方・すれ違いやすい点・関係を深めるヒントを300〜500字で。相性が高い点と補い合う点を具体的に。`
+}`;
 }
 
 /** 決定論フォールバック: APIキーが無い/失敗時に確定事実からテンプレ合成する */
@@ -86,6 +90,12 @@ export function fallbackText(input: DiagnosisInput): string {
         : compat.totalScore >= 40
           ? "工夫しがいのある相性"
           : "違いを楽しめると伸びる相性";
+  // 無料枠（§8）: スコアと"入口"までを見せ、攻略の中身は渡さない
+  if (input.depth === "teaser") {
+    const teaser = `【${lens}相性: ${compat.totalScore}点 / ${verdict}】\n\nライフパス${sc.number}（${sc.keywords.join("・")}）のあなたと、ライフパス${tc.number}（${tc.keywords.join("・")}）のお相手。数秘の相性は${compat.numerologyScore}点、性格傾向（Big5）の相性は${compat.big5Score}点でした。\n\nこの2つの数字の"差"にこそ、お二人の関係のくせが表れています。`;
+    return ensureDisclaimer(teaser);
+  }
+
   const body = `【${lens}相性: ${compat.totalScore}点 / ${verdict}】\n\nライフパス${sc.number}（${sc.keywords.join("・")}）のあなたと、ライフパス${tc.number}（${tc.keywords.join("・")}）のお相手。数秘の相性は${compat.numerologyScore}点、性格傾向（Big5）の相性は${compat.big5Score}点です。\n\n似ているところは安心感に、違うところはお互いを補い合う余白になります。${lens}面では、相手のペースを尊重しながら、あなたの強み「${sc.strengths[0]}」を差し出すと関係が深まります。`;
   return ensureDisclaimer(body);
 }

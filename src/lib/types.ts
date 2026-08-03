@@ -13,6 +13,9 @@ export type Big5Raw = Record<Big5Key, number>;
 export type Lens = "romance" | "business";
 export type Mode = "self" | "compatibility";
 
+/** 出力の深さ（§8 無料/有料の出し分け）: teaser=無料で見せる範囲 / full=LINE登録後 */
+export type Depth = "teaser" | "full";
+
 export interface Person {
   life_path: LifePath;
   big5: Big5Scores;
@@ -24,6 +27,8 @@ export interface DiagnosisInput {
   target?: Person;
   lens: Lens;
   mode: Mode;
+  /** 省略時は full（自己診断の無料枠は読み物を出す方針のため） */
+  depth?: Depth;
 }
 
 export interface Big5Result {

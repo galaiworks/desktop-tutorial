@@ -1,11 +1,16 @@
 "use client";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { lifePathFromISO } from "@/lib/numerology";
-import { scoreTipi, ITEMS, TIPI } from "@/lib/tipi";
+import { scoreTipi, ITEMS } from "@/lib/tipi";
 import { getNumberContent } from "@/lib/content";
 import { fusionHeadline } from "@/lib/fusion";
+import { encodeCode, buildLineUrl, buildCompatibilityUrl } from "@/lib/share";
+import { saveSelf } from "@/lib/storage";
+import { track } from "@/lib/analytics";
 import type { Big5Result, Big5Scores, Lens, LifePath } from "@/lib/types";
 import RadarChart, { displayValue } from "@/components/RadarChart";
+import TipiQuiz from "@/components/TipiQuiz";
 
 type Step = "birth" | "quiz" | "result";
 
@@ -19,91 +24,6 @@ const AXIS_LABELS: { key: keyof Big5Scores; label: string }[] = [
   { key: "O", label: "開放性" },
 ];
 
-/** アクセシブルな7件法リッカート（radiogroup / 矢印キー対応・roving tabindex） */
-function Likert({
-  name,
-  value,
-  onChange,
-  labelledBy,
-}: {
-  name: string;
-  value: number;
-  onChange: (v: number) => void;
-  labelledBy: string;
-}) {
-  const groupRef = useRef<HTMLDivElement>(null);
-
-  function move(delta: number) {
-    const current = value || 4;
-    const next = Math.min(7, Math.max(1, current + delta));
-    onChange(next);
-    requestAnimationFrame(() => {
-      const el = groupRef.current?.querySelector<HTMLElement>(
-        `[data-v="${next}"]`
-      );
-      el?.focus();
-    });
-  }
-
-  function onKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-      e.preventDefault();
-      move(1);
-    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-      e.preventDefault();
-      move(-1);
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      onChange(1);
-    } else if (e.key === "End") {
-      e.preventDefault();
-      onChange(7);
-    }
-  }
-
-  return (
-    <>
-      <div
-        className="likert"
-        role="radiogroup"
-        aria-labelledby={labelledBy}
-        ref={groupRef}
-        onKeyDown={onKeyDown}
-      >
-        {[1, 2, 3, 4, 5, 6, 7].map((v) => {
-          const checked = value === v;
-          // roving tabindex: 選択済み（無ければ中央4）だけをタブ順に入れる
-          const tabbable = value ? checked : v === 4;
-          return (
-            <span
-              key={v}
-              className="opt"
-              role="radio"
-              data-v={v}
-              aria-checked={checked}
-              aria-label={`${name}: 7段階中 ${v}`}
-              tabIndex={tabbable ? 0 : -1}
-              onClick={() => onChange(v)}
-              onKeyDown={(e) => {
-                if (e.key === " " || e.key === "Enter") {
-                  e.preventDefault();
-                  onChange(v);
-                }
-              }}
-            >
-              {v}
-            </span>
-          );
-        })}
-      </div>
-      <div className="likert-ends" aria-hidden="true">
-        <span>全く違う</span>
-        <span>強くそう思う</span>
-      </div>
-    </>
-  );
-}
-
 export default function Diagnose() {
   const [step, setStep] = useState<Step>("birth");
   const [birth, setBirth] = useState("");
@@ -115,6 +35,11 @@ export default function Diagnose() {
   const [big5, setBig5] = useState<Big5Result | null>(null);
   const [reading, setReading] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    track("diagnosis_start");
+  }, []);
 
   const answered = answers.filter((a) => a > 0).length;
   const allAnswered = answered === ITEMS.length;
@@ -123,6 +48,7 @@ export default function Diagnose() {
     setError(null);
     try {
       lifePathFromISO(birth);
+      track("birth_submitted", { lens });
       setStep("quiz");
     } catch (e) {
       setError((e as Error).message);
@@ -146,6 +72,9 @@ export default function Diagnose() {
       setLifePath(lp);
       setBig5(b5);
       setStep("result");
+      saveSelf({ life_path: lp, big5: b5.scores, lens });
+      track("tipi_complete");
+      track("result_view", { life_path: lp, lens });
 
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -165,17 +94,48 @@ export default function Diagnose() {
     }
   }
 
-  const lineHref = useMemo(() => {
-    if (!lifePath || !big5) return LINE_URL || "#";
-    const payload = { lp: lifePath, b5: big5.scores, lens, v: 1 };
-    const token =
+  const code = useMemo(
+    () => (lifePath && big5 ? encodeCode({ life_path: lifePath, big5: big5.scores }) : ""),
+    [lifePath, big5]
+  );
+
+  const lineHref = useMemo(
+    () => (code ? buildLineUrl(LINE_URL, code, lens) || "#" : LINE_URL || "#"),
+    [code, lens]
+  );
+
+  async function copyCode() {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      track("code_copy");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError("コピーできませんでした。コードを長押しして選択してください。");
+    }
+  }
+
+  async function share() {
+    const content = lifePath ? getNumberContent(lifePath) : null;
+    const url =
       typeof window !== "undefined"
-        ? window.btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+        ? buildCompatibilityUrl(window.location.origin, code)
         : "";
-    if (!LINE_URL) return "#";
-    const sep = LINE_URL.includes("?") ? "&" : "?";
-    return `${LINE_URL}${sep}numen=${encodeURIComponent(token)}`;
-  }, [lifePath, big5, lens]);
+    const text = `私は「${fusionHeadline(lifePath!, big5!.scores)}」でした。あなたとの相性も見てみませんか？`;
+    track("share_click");
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "NUMEN 診断結果", text, url });
+      } else {
+        await navigator.clipboard.writeText(`${text}\n${url}`);
+        setError(null);
+        alert("共有リンクをコピーしました");
+      }
+    } catch {
+      // ユーザーが共有をキャンセルした場合は何もしない
+    }
+    void content;
+  }
 
   // ── 生年月日入力 ──
   if (step === "birth") {
@@ -201,22 +161,24 @@ export default function Diagnose() {
           <p className="label" id="lens-label">
             どちらのレンズで読みますか？
           </p>
-          <div
-            className="lens-toggle"
-            role="group"
-            aria-labelledby="lens-label"
-          >
+          <div className="lens-toggle" role="group" aria-labelledby="lens-label">
             <button
               type="button"
               aria-pressed={lens === "romance"}
-              onClick={() => setLens("romance")}
+              onClick={() => {
+                setLens("romance");
+                track("lens_switch", { lens: "romance", page: "diagnose" });
+              }}
             >
               恋愛レンズ
             </button>
             <button
               type="button"
               aria-pressed={lens === "business"}
-              onClick={() => setLens("business")}
+              onClick={() => {
+                setLens("business");
+                track("lens_switch", { lens: "business", page: "diagnose" });
+              }}
             >
               ビジネスレンズ
             </button>
@@ -229,11 +191,7 @@ export default function Diagnose() {
           </p>
         )}
         <div className="btn-row">
-          <button
-            className="btn btn-primary"
-            disabled={!birth}
-            onClick={startQuiz}
-          >
+          <button className="btn btn-primary" disabled={!birth} onClick={startQuiz}>
             次へ（10問の質問）
           </button>
         </div>
@@ -246,33 +204,7 @@ export default function Diagnose() {
     return (
       <div className="card science">
         <p className="eyebrow science">STEP 2 / 2 ・ ビッグファイブ</p>
-        <div className="progress" aria-hidden="true">
-          <i style={{ width: `${(answered / ITEMS.length) * 100}%` }} />
-        </div>
-        <p className="progress-label" role="status" aria-live="polite">
-          {answered} / {ITEMS.length} 問 回答済み
-        </p>
-        <p className="muted">{TIPI.scale.stem}（1=全く違う 〜 7=強くそう思う）</p>
-
-        {ITEMS.map((item, i) => {
-          const legendId = `q-${item.id}`;
-          return (
-            <fieldset key={item.id}>
-              <legend id={legendId}>
-                <span className="q-num" aria-hidden="true">
-                  {i + 1}.
-                </span>
-                {item.text}
-              </legend>
-              <Likert
-                name={`設問${i + 1}`}
-                labelledBy={legendId}
-                value={answers[i]}
-                onChange={(v) => setAnswer(i, v)}
-              />
-            </fieldset>
-          );
-        })}
+        <TipiQuiz answers={answers} onAnswer={setAnswer} />
 
         {error && (
           <p className="err" role="alert">
@@ -380,6 +312,29 @@ export default function Diagnose() {
         </div>
       </div>
 
+      {/* 拡散導線（§12 シェア率） */}
+      <div className="card">
+        <p className="eyebrow story">相性を見る</p>
+        <h2 className="serif">気になる人と、重ねてみる</h2>
+        <p className="muted">
+          あなたの診断コードです。相手に渡すか、リンクを共有すると相性を算出できます。
+        </p>
+        <div className="code-box">
+          <code className="code-value">{code}</code>
+          <button className="btn btn-outline code-copy" type="button" onClick={copyCode}>
+            {copied ? "コピーしました" : "コードをコピー"}
+          </button>
+        </div>
+        <div className="btn-row">
+          <button className="btn btn-outline" type="button" onClick={share}>
+            結果をシェアする
+          </button>
+          <Link href="/compatibility" className="btn btn-primary">
+            相性診断へ進む
+          </Link>
+        </div>
+      </div>
+
       {content && (
         <div className="card">
           <p className="eyebrow story">フル鑑定</p>
@@ -418,7 +373,11 @@ export default function Diagnose() {
             の相性診断・攻略は公式LINEでお届けします。
           </p>
           <div className="btn-row">
-            <a className="btn btn-line" href={lineHref}>
+            <a
+              className="btn btn-line"
+              href={lineHref}
+              onClick={() => track("line_cta_click", { from: "diagnose", lens })}
+            >
               LINEでフル鑑定を受け取る
             </a>
           </div>
@@ -429,6 +388,12 @@ export default function Diagnose() {
             </p>
           )}
         </div>
+      )}
+
+      {error && (
+        <p className="err" role="alert">
+          {error}
+        </p>
       )}
 
       <div className="btn-row">

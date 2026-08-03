@@ -57,3 +57,27 @@ describe("guard", () => {
     expect(once).toBe(twice);
   });
 });
+
+describe("depth: teaser（§8 無料枠の出し分け）", () => {
+  const teaser: DiagnosisInput = { ...compat, depth: "teaser" };
+
+  it("teaser still shows the computed score", () => {
+    const t = fallbackText(teaser);
+    expect(t).toMatch(/相性: \d+点/);
+    expect(checkGuard(t).ok).toBe(true);
+  });
+
+  it("teaser withholds the actionable advice that full includes", () => {
+    const full = fallbackText({ ...compat, depth: "full" });
+    const short = fallbackText(teaser);
+    expect(full).toContain("関係が深まります");
+    expect(short).not.toContain("関係が深まります");
+    expect(short.length).toBeLessThan(full.length);
+  });
+
+  it("teaser prompt instructs the model not to give the payoff", () => {
+    const p = buildPrompt(teaser);
+    expect(p).toContain("無料版");
+    expect(p).toContain("具体的な攻略法・改善策は書かない");
+  });
+});

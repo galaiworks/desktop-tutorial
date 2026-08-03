@@ -20,13 +20,19 @@ src/lib/                    純ロジック（外部依存なし・完全決定�
   generate.ts               AI生成レイヤー（Claude + フォールバック）
   guard.ts                  禁止ワードガード + 但し書き
   content.ts                ナンバー解説ローダ
+  share.ts                  診断コードの生成・解釈
+  storage.ts                自己診断結果の端末保存
+  analytics.ts              KPI計測
+  persistence.ts            Supabase保存（未設定なら無効）
   types.ts                  共通型
 src/app/                    Next.js App Router（モバイルファーストUI）
   page.tsx                  LP
-  diagnose/page.tsx         生年月日 → TIPI-J → 結果 → LINE誘導
-  api/generate/route.ts     AI生成API（入力バリデーションつき）
-src/components/RadarChart.tsx  依存ゼロのSVGレーダー
-tests/                      vitest（30件）
+  diagnose/page.tsx         生年月日 → TIPI-J → 結果 → 診断コード → LINE誘導
+  compatibility/page.tsx    2者相性（コード貼付 / 代理回答・レンズ切替）
+  privacy, terms            法務ページ
+  api/generate/route.ts     AI生成API（入力バリデーション + 保存）
+src/components/             RadarChart / TipiQuiz / Likert（共通UI）
+tests/                      vitest（43件）
 ```
 
 ## 2. 要件 → 実装 対応（詳細）
@@ -62,7 +68,7 @@ tests/                      vitest（30件）
 
 ### §5.7 LINE誘導
 - 結果画面の CTA から友だち追加URL（`NEXT_PUBLIC_LINE_ADD_URL`）へ。
-- 診断結果（ライフパス + Big5 + レンズ）を Base64 トークン `?numen=` で引き継ぎ。
+- 診断結果（ライフパス + Big5 + レンズ）を診断コード `?numen=N1-...&lens=...` で引き継ぎ。
 - URL未設定時は導線を無効化しつつ設定メモを表示。
 
 ### §8 無料/有料の出し分け
@@ -74,16 +80,16 @@ tests/                      vitest（30件）
 - 出力末尾へ娯楽目的の但し書きを冪等に付与。
 
 ## 3. テスト（`npm test`）
+- share: 診断コードの往復・全角入力の吸収・URL生成
 - numerology: 桁合計・還元・マスター停止・要件の実例・還元方式・入力検証。
 - tipi: 逆転処理・中立=50・正規化・逆転採点・異常入力。
 - compatibility: 数秘相性の範囲/対称性・類似/補完・総合・レンズ差。
 - generate: フォールバック文（スコア埋め込み・ガード通過）・プロンプト構築・ガード・但し書き冪等性。
 
 ## 4. 未実装（将来フェーズ）
-- 相性フルUI（現状はAPIとエンジンのみ。self診断UIを実装）
-- ユーザーDB・マッチング（Supabase）、LIFF、BtoBダッシュボード
-- パーソナルイヤー（年運）、名前ベースの数字
-- 計測基盤（§12 KPI 計装）
+- ユーザー同士のマッチング（DBから相性上位を相互推薦。テーブルは用意済み）
+- LIFF（LINE内ミニアプリ化）、BtoBチーム相性ダッシュボード
+- パーソナルイヤー（年運）、名前ベースの数字（ディスティニー等）
 
 ## 5. 運用前に埋める（§14 の未確定論点）
 1. TIPI-J 項目本文の権利確認と正規文差替（`config/tipi_j.json`）
@@ -92,3 +98,35 @@ tests/                      vitest（30件）
 4. 主戦場レンズ（恋愛/ビジネス）の初期前面出し
 5. 無料開示範囲の最終ライン（相性スコアを数値まで見せるか）
 6. プロダクト名確定、LINE初回商品の設計
+
+## 6. 追加実装（MVP完成分）
+
+### §3.1 2者相性診断UI — `src/app/compatibility/page.tsx`
+- 自分のデータは自己診断時に端末へ保存（`src/lib/storage.ts`）し自動復元。生年月日は保存せず算出結果のみ。
+- 相手の指定は2通り: **診断コードを貼る**／**その場で代理回答**（生年月日＋TIPI-J 10問）。
+- `?with=<code>` 付きリンクで開くと相手が自動セットされる＝シェアからの相性診断が1タップで始まる。
+- 結果は総合スコアを主役に、数秘相性／Big5相性の内訳を色分けメーター＋数値で提示。
+
+### 診断コード — `src/lib/share.ts`
+`N1-{lifePath}-{E}-{A}-{C}-{N}-{O}`（例 `N1-11-72-40-85-30-66`）。
+Base64ではなく可読な書式にしたため、口頭・スクショ・LINEでの受け渡しに耐える。
+全角英数/全角ハイフンを正規化して取り込む（コピペ耐性）。LINE誘導URLにも同じコードを使用。
+
+### §8 無料/有料の出し分け（`depth`）
+`depth: "teaser" | "full"` をAI生成レイヤーに追加。相性診断の無料枠は
+「スコアは見せる／攻略は渡さない」。フォールバック文・プロンプト双方に反映し、テストで担保。
+
+### §12 KPI計測 — `src/lib/analytics.ts`
+GTM(dataLayer)/GA4(gtag)/Plausible のいずれかがあれば送信、無ければ無害に破棄。
+計測イベント: `diagnosis_start` / `birth_submitted` / `tipi_complete` / `result_view` /
+`share_click` / `code_copy` / `line_cta_click` / `compatibility_start` /
+`compatibility_result_view` / `lens_switch`。個人情報はイベントに載せない。
+
+### §7 永続化 — `supabase/migrations/0001_init.sql` + `src/lib/persistence.ts`
+`users` / `diagnoses` / `matches` / `line_links`。**RLSを有効化しポリシーを作らない**ことで
+匿名クライアントからの読み書きを遮断し、サーバの service role 経由のみ許可する。
+環境変数未設定なら保存は完全に無効化され、診断は通常どおり動作する。
+
+### §13 法務ページ
+`/privacy`（取得情報・利用目的・保存範囲・外部送信・LINE連携）と
+`/terms`（娯楽目的の明示・免責・性格特性を優劣で断じない旨・TIPI-J出典）。フッターから常時到達可能。

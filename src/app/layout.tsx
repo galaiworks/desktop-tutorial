@@ -5,6 +5,15 @@ export const metadata: Metadata = {
   title: "NUMEN — 数秘 × ビッグファイブ 診断",
   description:
     "生年月日の数秘術と、心理学のビッグファイブを掛け合わせ、AIがあなただけの診断文を生成します。",
+  // SNS拡散時のカード表示（§12 シェア率）
+  openGraph: {
+    title: "NUMEN — 数秘 × ビッグファイブ 診断",
+    description:
+      "生まれた日の数と、性格の科学から。約2分・10問であなたの&ldquo;取扱説明書&rdquo;を。",
+    type: "website",
+    locale: "ja_JP",
+  },
+  twitter: { card: "summary" },
 };
 
 // アクセシビリティ: ユーザーによる拡大を禁止しない（maximumScale は指定しない）
@@ -46,6 +55,22 @@ export default function RootLayout({
         <footer className="siteftr">
           <div className="siteftr-inner">
             <p>NUMEN</p>
+            <nav aria-label="フッター">
+              <ul className="ftr-links">
+                <li>
+                  <a href="/diagnose">自己診断</a>
+                </li>
+                <li>
+                  <a href="/compatibility">相性診断</a>
+                </li>
+                <li>
+                  <a href="/terms">ご利用にあたって</a>
+                </li>
+                <li>
+                  <a href="/privacy">プライバシーポリシー</a>
+                </li>
+              </ul>
+            </nav>
             <p className="muted">
               娯楽・自己理解を目的とした診断です。結果を保証するものではありません。
             </p>

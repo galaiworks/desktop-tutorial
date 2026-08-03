@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateDiagnosis } from "@/lib/generate";
+import { compatibility } from "@/lib/compatibility";
+import { recordDiagnosis, recordMatch } from "@/lib/persistence";
 import type { Big5Key, Big5Scores, DiagnosisInput, LifePath } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -37,12 +39,39 @@ export async function POST(req: NextRequest) {
   }
   const lens = o.lens === "business" ? "business" : "romance";
   const mode = o.mode === "compatibility" ? "compatibility" : "self";
+  const depth = o.depth === "teaser" ? "teaser" : "full";
   const target = mode === "compatibility" ? parsePerson(o.target) : undefined;
   if (mode === "compatibility" && !target) {
     return NextResponse.json({ error: "target データが不正です" }, { status: 400 });
   }
 
-  const input: DiagnosisInput = { self, target: target ?? undefined, lens, mode };
+  const input: DiagnosisInput = {
+    self,
+    target: target ?? undefined,
+    lens,
+    mode,
+    depth,
+  };
+
+  // 相性スコアはエンジンが確定させる（AIには解説のみ任せる §5.5）
+  const compat =
+    mode === "compatibility" && target
+      ? compatibility(self, target, lens)
+      : undefined;
+
   const result = await generateDiagnosis(input);
-  return NextResponse.json(result);
+
+  // 保存は待たない（失敗しても診断結果は返す §7）
+  const persist =
+    mode === "compatibility" && target && compat
+      ? recordMatch({
+          self_life_path: self.life_path,
+          target_life_path: target.life_path,
+          lens,
+          score: compat.totalScore,
+        })
+      : recordDiagnosis({ life_path: self.life_path, big5: self.big5, lens });
+  persist.catch(() => {});
+
+  return NextResponse.json({ ...result, compatibility: compat });
 }

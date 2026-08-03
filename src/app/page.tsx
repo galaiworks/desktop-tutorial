@@ -18,6 +18,9 @@ export default function Home() {
           <Link href="/diagnose" className="btn btn-primary">
             無料で診断をはじめる
           </Link>
+          <Link href="/compatibility" className="btn btn-outline">
+            気になる人との相性を見る
+          </Link>
         </div>
         <p className="muted" style={{ marginTop: 12 }}>
           所要 約2分・10問／本名の入力は不要です。

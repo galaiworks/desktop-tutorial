@@ -673,3 +673,135 @@ code {
   letter-spacing: 0.22em;
   font-weight: 600;
 }
+
+/* ===== 追加: 相性診断・共有・法務ページ ===== */
+
+/* テキスト入力（診断コード） */
+input[type="text"] {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--ink);
+  border: 1.5px solid var(--hairline-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+input::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+
+/* 相性スコアの主役表示 */
+.score-hero {
+  text-align: center;
+  padding: 10px 0 2px;
+  color: var(--story);
+}
+.score-hero-num {
+  font-family: var(--serif);
+  font-size: clamp(3.4rem, 18vw, 5rem);
+  font-weight: 600;
+  line-height: 1;
+}
+.score-hero-unit {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  margin-left: 4px;
+}
+.center {
+  text-align: center;
+}
+
+/* 内訳メーターの色分け（数秘=物語 / Big5=科学） */
+.meter.story {
+  background: var(--story-tint);
+}
+.meter.story > i {
+  background: var(--story);
+}
+
+/* 診断コード表示 */
+.code-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0 4px;
+  padding: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+}
+.code-value {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  word-break: break-all;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  color: var(--ink);
+}
+.code-copy {
+  min-height: 46px;
+  font-size: 0.95rem;
+}
+
+/* テキストリンク風ボタン */
+.linkish {
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  margin-left: 8px;
+  color: var(--story);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* 法務ページの本文 */
+article.card h2 {
+  margin-top: 26px;
+  padding-top: 4px;
+  font-size: 1.05rem;
+}
+article.card h2:first-of-type {
+  margin-top: 18px;
+}
+article.card ul {
+  margin: 0 0 14px;
+  padding-left: 1.25em;
+}
+article.card li {
+  margin-bottom: 7px;
+}
+article.card a {
+  color: var(--story);
+  text-underline-offset: 3px;
+}
+
+/* フッターリンク */
+.ftr-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding: 0;
+  margin: 10px 0 14px;
+}
+.ftr-links a {
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  text-decoration: none;
+  border-bottom: 1px solid var(--hairline-strong);
+  padding-bottom: 2px;
+}
+.ftr-links a:hover {
+  color: var(--ink);
+}
