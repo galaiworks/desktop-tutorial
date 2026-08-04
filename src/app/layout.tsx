@@ -64,6 +64,18 @@ export default function RootLayout({
                   <a href="/compatibility">相性診断</a>
                 </li>
                 <li>
+                  <a href="/name">名前の数字</a>
+                </li>
+                <li>
+                  <a href="/year">年運</a>
+                </li>
+                <li>
+                  <a href="/match">マッチング</a>
+                </li>
+                <li>
+                  <a href="/team">チーム相性（法人）</a>
+                </li>
+                <li>
                   <a href="/terms">ご利用にあたって</a>
                 </li>
                 <li>

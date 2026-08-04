@@ -805,3 +805,38 @@ article.card a {
 .ftr-links a:hover {
   color: var(--ink);
 }
+
+/* ===== メニューリスト（LPの機能一覧） ===== */
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+.menu-list li + li {
+  border-top: 1px solid var(--hairline);
+}
+.menu-list a {
+  display: block;
+  padding: 14px 2px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.menu-list a b {
+  display: block;
+  font-size: 1rem;
+  color: var(--story);
+}
+.menu-list a span {
+  display: block;
+  font-size: 0.84rem;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+.menu-list a:hover b {
+  text-decoration: underline;
+}
+
+/* チェックボックス（マッチング参加同意） */
+input[type="checkbox"] {
+  accent-color: var(--story);
+}

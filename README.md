@@ -2,7 +2,7 @@
 
 生年月日から算出する**数秘術（ライフパスナンバー）**と、心理学で最も信頼される性格理論**ビッグファイブ（TIPI-J）**を掛け合わせ、**AIがパーソナライズした診断文**を生成します。診断を入口に恋愛／ビジネスの相性マッチングへ展開し、公式LINE登録へ誘導する MVP 実装です。
 
-> 要件定義書（コードネーム NUMEN v0.1）の **MVP（フェーズ1）全体**と、P3の計測基盤までを実装したものです。
+> 要件定義書（コードネーム NUMEN v0.1）の **MVP（フェーズ1）およびフェーズ2の機能一式**を実装したものです。
 
 ## 実装済みスコープ
 
@@ -22,8 +22,13 @@
 | §13 プライバシーポリシー / 利用にあたって | `src/app/privacy`, `src/app/terms` |
 | §7 データ設計（RLS込みスキーマ・保存） | `supabase/migrations/0001_init.sql` + `src/lib/persistence.ts` |
 | レーダーチャート（依存ゼロのSVG） | `src/components/RadarChart.tsx` |
+| §3.2 名前の数字（ディスティニー／ソウル／パーソナリティ） | `src/lib/name.ts` + `src/app/name` |
+| §3.2 パーソナルイヤー（年運） | `src/lib/personalYear.ts` + `src/app/year` |
+| §3.2 BtoBチーム相性ダッシュボード | `src/lib/team.ts` + `src/app/team` |
+| §3.2 ユーザー同士のマッチング（DB） | `src/lib/matching.ts` + `src/app/match` + `api/match` |
+| §5.7 LIFF（LINE内でフル鑑定を開放） | `src/app/liff` + `api/link` |
 
-将来フェーズ（マッチングDBによる相互推薦、LIFF、BtoBダッシュボード、年運）は未実装です。
+決済（Stripe等）は要件定義書 §3.3 により非スコープです。
 
 ## 設計上の重要判断（要件定義書のデフォルト採用）
 
@@ -43,7 +48,7 @@ npm run dev                  # http://localhost:3000
 ```
 
 ```bash
-npm test        # ユニットテスト（43件）
+npm test        # ユニットテスト（78件）
 npm run build   # 本番ビルド + 型チェック
 ```
 
@@ -53,7 +58,8 @@ npm run build   # 本番ビルド + 型チェック
 - **ナンバー解説文**: `data/numbers/*.json` は独自執筆のドラフト。**森田さん監修で最終化**。既存ブランド流派の文言は転用していません。
 - **相性マトリクス / Big5相性重み**: `config/numerology_affinity.json`・`config/big5_compat.json` は初期ヒューリスティクス。森田さんの流派解釈でチューニングしてください。
 - **法務**: プライバシーポリシー・利用にあたっての雛形は実装済みだが、**運営者名と問い合わせ先は公開前に記載が必要**（`src/app/privacy/page.tsx`）。
-- **環境変数**: `NEXT_PUBLIC_LINE_ADD_URL` 未設定だとLINE導線は無効表示。`SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` 未設定なら保存は自動的に無効（診断は動作）。
+- **環境変数**: `NEXT_PUBLIC_LINE_ADD_URL` 未設定だとLINE導線は無効表示。`SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` 未設定なら保存とマッチングは無効（診断は動作）。`NEXT_PUBLIC_LIFF_ID` 未設定なら `/liff` はフル鑑定を出しません。
+- **マイグレーション**: `supabase/migrations/` の SQL を適用してからマッチング機能を有効化してください。
 
 ## 技術スタック
 

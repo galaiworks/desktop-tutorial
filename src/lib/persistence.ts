@@ -56,3 +56,63 @@ export async function recordMatch(params: {
     score: params.score,
   });
 }
+
+// ── フェーズ2: マッチング / LIFF 連携（§3.2 / §5.7） ──
+
+interface MatchProfileRow {
+  id: string;
+  handle: string;
+  life_path: LifePath;
+  big5: Big5Scores;
+}
+
+async function select<T>(path: string): Promise<T[]> {
+  if (!isPersistenceEnabled()) return [];
+  try {
+    const res = await fetch(`${URL}/rest/v1/${path}`, {
+      headers: {
+        apikey: KEY as string,
+        authorization: `Bearer ${KEY}`,
+      },
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as T[];
+  } catch {
+    console.warn(`[numen] failed to query ${path}`);
+    return [];
+  }
+}
+
+/** マッチングにオプトインした候補者を取得する（レンズ別） */
+export async function listCandidates(
+  lens: Lens,
+  limit = 200
+): Promise<MatchProfileRow[]> {
+  return select<MatchProfileRow>(
+    `match_profiles?opted_in=eq.true&lens=eq.${lens}` +
+      `&select=id,handle,life_path,big5&limit=${limit}`
+  );
+}
+
+/** マッチングへの参加登録（明示的オプトインが前提） */
+export async function upsertMatchProfile(params: {
+  handle: string;
+  life_path: LifePath;
+  big5: Big5Scores;
+  lens: Lens;
+  opted_in: boolean;
+}): Promise<void> {
+  await insert("match_profiles", { ...params, updated_at: new Date().toISOString() });
+}
+
+/** LIFFで取得したLINEユーザーと診断結果を紐付ける（§5.7） */
+export async function linkLineUser(params: {
+  token: string;
+  line_user_id: string;
+  life_path: LifePath;
+  big5: Big5Scores;
+  lens: Lens;
+}): Promise<void> {
+  await insert("line_links", { ...params, consumed_at: new Date().toISOString() });
+}

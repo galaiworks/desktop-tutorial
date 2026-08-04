@@ -68,6 +68,37 @@ export default function Home() {
         </p>
       </div>
 
+      <div className="card">
+        <p className="eyebrow story">ほかにもできること</p>
+        <h2 className="serif">数字を、いろいろな角度から</h2>
+        <ul className="menu-list">
+          <li>
+            <Link href="/name">
+              <b>名前の数字</b>
+              <span>才能・本音・印象を示す3つの数（ディスティニー他）</span>
+            </Link>
+          </li>
+          <li>
+            <Link href="/year">
+              <b>年運（パーソナルイヤー）</b>
+              <span>いまが9年周期のどの季節かを知る</span>
+            </Link>
+          </li>
+          <li>
+            <Link href="/match">
+              <b>マッチング</b>
+              <span>相性の高い人をおすすめから探す</span>
+            </Link>
+          </li>
+          <li>
+            <Link href="/team">
+              <b>チーム相性（法人向け）</b>
+              <span>メンバー間の総当たり相性と、チームの傾向</span>
+            </Link>
+          </li>
+        </ul>
+      </div>
+
       <p className="notice">
         本診断は娯楽・自己理解を目的としたもので、結果を保証するものではありません。
         生年月日は診断の算出のみに使用します。

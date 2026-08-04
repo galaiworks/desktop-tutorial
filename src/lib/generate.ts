@@ -6,6 +6,7 @@ import { buildFusionFacts } from "./fusion";
 import { getNumberContent } from "./content";
 import { compatibility } from "./compatibility";
 import { DISCLAIMER, checkGuard, ensureDisclaimer } from "./guard";
+import type { TeamResult } from "./team";
 
 const LENS_LABEL: Record<Lens, string> = {
   romance: "恋愛",
@@ -149,5 +150,85 @@ export async function generateDiagnosis(
   }
 
   const text = fallbackText(input);
+  return { text, source: "fallback", guard: checkGuard(text) };
+}
+
+// ── チーム診断（BtoB）の生成 — 要件定義書 §2 提供価値③ / §3.2 ──
+
+/** チーム所見のプロンプト。数値はすべて確定値として渡し、AIは解釈のみ担う。 */
+export function buildTeamPrompt(team: TeamResult): string {
+  const pairLines = team.pairs
+    .map((p) => `- ${p.aName} × ${p.bName}: ${p.score}点`)
+    .join("\n");
+  return `# 依頼: チームの相互理解レポートを生成
+## 確定事実（数値は創作・改変しないこと）
+- 人数: ${team.memberCount}名 / 平均相性: ${team.averageScore}点
+- チーム平均のBig5: ${big5Line(team.profile)}
+- ペア別スコア:
+${pairLines}
+- 傾向メモ: ${team.notes.join(" / ")}
+## 出力要件
+チームの強みと、噛み合いにくい場面での工夫を400字程度で。
+**重要**: 個人の性格を優劣で評価しないこと。採用・評価の判断材料として断定しないこと。
+「このチームはこう動くと力が出る」という相互理解の視点で書いてください。`;
+}
+
+/** チーム所見の決定論フォールバック */
+export function fallbackTeamText(team: TeamResult): string {
+  const strong = team.strongestPair;
+  const body = [
+    `【チーム相性レポート（${team.memberCount}名 / 平均${team.averageScore}点）】`,
+    "",
+    team.notes.join("\n"),
+    "",
+    strong
+      ? `もっとも噛み合いやすいのは ${strong.aName} と ${strong.bName}（${strong.score}点）の組み合わせです。難易度の高い案件では、この2人を軸に据えると進みやすくなります。`
+      : "",
+    "",
+    "スコアは相互理解のための参考指標です。低いペアは「相性が悪い」のではなく、前提の共有に少し時間をかけるとよい組み合わせだと捉えてください。",
+  ]
+    .filter(Boolean)
+    .join("\n");
+  return ensureDisclaimer(body);
+}
+
+/** チーム所見を生成する（Claude → 失敗時フォールバック） */
+export async function generateTeamReading(
+  team: TeamResult
+): Promise<GenerateResult> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
+
+  if (apiKey) {
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model,
+          max_tokens: 1024,
+          system: SYSTEM_PROMPT,
+          messages: [{ role: "user", content: buildTeamPrompt(team) }],
+        }),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as {
+          content?: { type: string; text?: string }[];
+        };
+        const raw = data.content?.map((b) => b.text ?? "").join("").trim() ?? "";
+        if (raw) {
+          const text = ensureDisclaimer(raw);
+          return { text, source: "claude", guard: checkGuard(text) };
+        }
+      }
+    } catch {
+      // フォールバックへ
+    }
+  }
+  const text = fallbackTeamText(team);
   return { text, source: "fallback", guard: checkGuard(text) };
 }
