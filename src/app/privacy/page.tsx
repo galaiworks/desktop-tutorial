@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { SCALE } from "@/lib/big5Scale";
+import { SITE, isOperatorConfigured } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "プライバシーポリシー — NUMEN",
@@ -21,7 +23,8 @@ export default function Privacy() {
           <b>生年月日</b>（ライフパスナンバーの算出に使用します）
         </li>
         <li>
-          <b>性格傾向に関する10問への回答</b>（ビッグファイブのスコア算出に使用します）
+          <b>性格傾向に関する10問への回答</b>（ビッグファイブのスコア算出に使用します。
+          使用尺度：{SCALE.label}）
         </li>
         <li>
           相性診断をご利用の場合、お相手の生年月日および回答、または診断コード
@@ -68,10 +71,17 @@ export default function Privacy() {
       </p>
 
       <h2>6. お問い合わせ</h2>
-      <p className="muted">
-        本ポリシーに関するお問い合わせ先は、公開時に記載します。
-        {/* 公開前に運営者名・連絡先を記載してください（§13-4） */}
-      </p>
+      {isOperatorConfigured() ? (
+        <p>
+          {SITE.operatorName}
+          <br />
+          お問い合わせ：{SITE.contactEmail}
+        </p>
+      ) : (
+        <p className="err">
+          【公開前に要記載】運営者名・連絡先が未設定です（config/site.json）。
+        </p>
+      )}
 
       <p className="notice">
         本ポリシーは、法令の変更やサービス内容の変更に応じて改定される場合があります。

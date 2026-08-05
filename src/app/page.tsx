@@ -41,7 +41,7 @@ export default function Home() {
         <p className="eyebrow science">科学の裏づけ</p>
         <h2>ビッグファイブ（5因子）</h2>
         <p className="muted">
-          外向性・協調性・勤勉性・情緒安定性・開放性。10問（TIPI-J）で測り、
+          外向性・協調性・勤勉性・情緒安定性・開放性。10問で測り、
           レーダーと数値で可視化します。物語とは層を分けて、
           &ldquo;測れるもの&rdquo;として扱います。
         </p>

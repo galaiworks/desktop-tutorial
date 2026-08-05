@@ -1,12 +1,13 @@
 "use client";
-import { ITEMS, TIPI } from "@/lib/tipi";
+import { ITEMS, SCALE } from "@/lib/big5Scale";
 import Likert from "./Likert";
 
 /**
- * TIPI-J 10問の設問ブロック（自己診断／相性診断の相手入力で共用）。
+ * ビッグファイブ10問の設問ブロック（自己診断／相性診断の相手入力で共用）。
+ * 項目は config/big5_scale.json の active 尺度から供給される。
  * 設問は fieldset/legend で構造化し、回答は radiogroup として提供する。
  */
-export default function TipiQuiz({
+export default function Big5Quiz({
   answers,
   onAnswer,
   idPrefix = "q",
@@ -28,7 +29,7 @@ export default function TipiQuiz({
         {answered} / {ITEMS.length} 問 回答済み
       </p>
       <p className="muted">
-        {stemNote ?? TIPI.scale.stem}（1=全く違う 〜 7=強くそう思う）
+        {stemNote ?? SCALE.scale.stem}（1=全く違う 〜 7=強くそう思う）
       </p>
 
       {ITEMS.map((item, i) => {

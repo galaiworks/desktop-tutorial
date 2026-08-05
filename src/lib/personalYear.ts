@@ -10,7 +10,8 @@ export interface PersonalYearContent {
   donts: string[];
   love: string;
   work: string;
-  disclaimer: string;
+  /** 監修用の内部メモ。ユーザーには表示しない。 */
+  _editorialNote?: string;
 }
 
 interface PersonalYearData {

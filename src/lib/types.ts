@@ -59,5 +59,6 @@ export interface NumberContent {
   love: string;
   work: string;
   caution: string;
-  disclaimer: string;
+  /** 監修用の内部メモ。ユーザーには表示しない。 */
+  _editorialNote?: string;
 }

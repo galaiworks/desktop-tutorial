@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { lifePathFromISO } from "@/lib/numerology";
-import { scoreTipi, ITEMS } from "@/lib/tipi";
+import { scoreBig5, ITEMS, scaleFootnote } from "@/lib/big5Scale";
 import { getNumberContent } from "@/lib/content";
 import { fusionHeadline } from "@/lib/fusion";
 import { encodeCode, buildLineUrl, buildCompatibilityUrl } from "@/lib/share";
@@ -10,7 +10,7 @@ import { saveSelf } from "@/lib/storage";
 import { track } from "@/lib/analytics";
 import type { Big5Result, Big5Scores, Lens, LifePath } from "@/lib/types";
 import RadarChart, { displayValue } from "@/components/RadarChart";
-import TipiQuiz from "@/components/TipiQuiz";
+import Big5Quiz from "@/components/Big5Quiz";
 
 type Step = "birth" | "quiz" | "result";
 
@@ -68,7 +68,7 @@ export default function Diagnose() {
     setLoading(true);
     try {
       const lp = lifePathFromISO(birth);
-      const b5 = scoreTipi(answers);
+      const b5 = scoreBig5(answers);
       setLifePath(lp);
       setBig5(b5);
       setStep("result");
@@ -199,12 +199,12 @@ export default function Diagnose() {
     );
   }
 
-  // ── TIPI-J 10問 ──
+  // ── ビッグファイブ10問 ──
   if (step === "quiz") {
     return (
       <div className="card science">
         <p className="eyebrow science">STEP 2 / 2 ・ ビッグファイブ</p>
-        <TipiQuiz answers={answers} onAnswer={setAnswer} />
+        <Big5Quiz answers={answers} onAnswer={setAnswer} />
 
         {error && (
           <p className="err" role="alert">
@@ -411,9 +411,8 @@ export default function Diagnose() {
 
       <p className="notice">
         本診断は娯楽・自己理解を目的としたもので、結果を保証するものではありません。
-        {content?.disclaimer}
         <br />
-        Big5尺度：小塩ら（2012）TIPI-J, パーソナリティ研究, 21, 40–52。
+        {scaleFootnote()}
       </p>
     </>
   );

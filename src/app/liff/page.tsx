@@ -182,7 +182,6 @@ export default function LiffPage() {
 
       <p className="notice">
         本診断は娯楽・自己理解を目的としたもので、結果を保証するものではありません。
-        {content?.disclaimer}
       </p>
     </>
   );

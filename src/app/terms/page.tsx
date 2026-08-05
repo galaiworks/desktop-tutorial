@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { SCALE } from "@/lib/big5Scale";
+import { SITE, isOperatorConfigured } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "ご利用にあたって — NUMEN",
@@ -44,13 +46,21 @@ export default function Terms() {
 
       <h2>4. 測定尺度について</h2>
       <p>
-        ビッグファイブの測定には、日本語版 Ten Item Personality Inventory（TIPI-J）の
-        構成に基づく10項目を用いています。
+        ビッグファイブ（五因子モデル）そのものは、性格心理学において広く検証されてきた
+        理論です。本サービスでは、その5因子を10項目で測定しています。
       </p>
-      <p className="muted">
-        出典：小塩真司・阿部晋吾・カトローニ ピノ（2012）「日本語版Ten Item Personality
-        Inventory（TIPI-J）作成の試み」パーソナリティ研究, 21, 40–52.
+      <p>
+        使用尺度：<b>{SCALE.label}</b>
       </p>
+      {SCALE.citation ? (
+        <p className="muted">出典：{SCALE.citation}</p>
+      ) : (
+        <p className="muted">
+          本尺度は当サービスが独自に作成したものです。
+          <b>学術的な信頼性・妥当性の検証は行っていません。</b>
+          結果は自己理解のきっかけとしてお楽しみください。
+        </p>
+      )}
 
       <h2>5. 知的財産</h2>
       <p>
@@ -58,7 +68,20 @@ export default function Terms() {
         本サービス提供者が独自に作成したものです。無断での転載・複製をお断りします。
       </p>
 
-      <h2>6. 個人情報</h2>
+      <h2>6. 運営者</h2>
+      {isOperatorConfigured() ? (
+        <p>
+          {SITE.operatorName}
+          <br />
+          お問い合わせ：{SITE.contactEmail}
+        </p>
+      ) : (
+        <p className="err">
+          【公開前に要記載】運営者名・連絡先が未設定です（config/site.json）。
+        </p>
+      )}
+
+      <h2>7. 個人情報</h2>
       <p>
         個人情報の取扱いについては、
         <a href="/privacy">プライバシーポリシー</a>をご確認ください。

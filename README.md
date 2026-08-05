@@ -9,7 +9,7 @@
 | 要件 | 実装 |
 |---|---|
 | §5.2 数秘エンジン（マスターナンバー・還元方式を設定化） | `src/lib/numerology.ts` + `config/numerology.json` |
-| §5.3 TIPI-J 10問・5因子採点（逆転処理・0-100正規化） | `src/lib/tipi.ts` + `config/tipi_j.json` |
+| §5.3 Big5 10問・5因子採点（尺度アダプタ化） | `src/lib/big5Scale.ts` + `config/scales/*` |
 | §5.4 融合ロジック（数秘ラベル × Big5補正） | `src/lib/fusion.ts` |
 | §5.5 AI生成レイヤー（確定値はコード／読み物はAI） | `src/lib/generate.ts` + `src/app/api/generate` |
 | §5.6 相性エンジン（数秘マトリクス × Big5相性・レンズ別） | `src/lib/compatibility.ts` + `config/*` |
@@ -48,16 +48,23 @@ npm run dev                  # http://localhost:3000
 ```
 
 ```bash
-npm test        # ユニットテスト（78件）
+npm test        # ユニットテスト（82件）
 npm run build   # 本番ビルド + 型チェック
 ```
 
-## 要チェック事項（未確定・監修待ち。要件定義書 §13/§14）
+## 公開前にやること
 
-- **TIPI-J 項目本文**: `config/tipi_j.json` の `text` は **placeholder**。商用利用の権利確認の上、公式版（小塩ら, 2012）の正規項目文へ差し替えること（`placeholder: true` フラグで検出可能）。採点構造（因子対応・逆転）は正しく実装済み。
-- **ナンバー解説文**: `data/numbers/*.json` は独自執筆のドラフト。**森田さん監修で最終化**。既存ブランド流派の文言は転用していません。
-- **相性マトリクス / Big5相性重み**: `config/numerology_affinity.json`・`config/big5_compat.json` は初期ヒューリスティクス。森田さんの流派解釈でチューニングしてください。
-- **法務**: プライバシーポリシー・利用にあたっての雛形は実装済みだが、**運営者名と問い合わせ先は公開前に記載が必要**（`src/app/privacy/page.tsx`）。
+```bash
+npm run validate   # 監修・運営者情報の入力漏れを機械チェック
+```
+
+詳細な手順は [`docs/HANDOVER.md`](docs/HANDOVER.md)（監修・運営者向けチェックリスト）にまとめてあります。
+
+- **運営者名・連絡先**（必須）: `config/site.json`。未設定だと法務ページに赤字の警告が出ます。
+- **ビッグファイブ尺度**: 既定は**独自尺度 `numen-10`（権利処理不要・そのまま公開可）**。TIPI-Jに切り替える場合は権利確認と正規項目文への差し替えが必要で、仮テキストのままでは検証ツールとテストが失敗します。
+- **ナンバー解説文**: `data/numbers/*.json` は独自執筆のドラフト。**監修者の確認を経て最終化**。既存ブランド流派の文言は転用していません。
+- **相性マトリクス / Big5相性重み**: `config/numerology_affinity.json`・`config/big5_compat.json` は初期ヒューリスティクス。監修者の流派解釈でチューニングしてください。
+- **法務**: プライバシーポリシー・利用規約は実装済み。使用中の尺度に応じて出典表記が自動で切り替わります。
 - **環境変数**: `NEXT_PUBLIC_LINE_ADD_URL` 未設定だとLINE導線は無効表示。`SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` 未設定なら保存とマッチングは無効（診断は動作）。`NEXT_PUBLIC_LIFF_ID` 未設定なら `/liff` はフル鑑定を出しません。
 - **マイグレーション**: `supabase/migrations/` の SQL を適用してからマッチング機能を有効化してください。
 

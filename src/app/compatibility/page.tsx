@@ -2,13 +2,13 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { lifePathFromISO } from "@/lib/numerology";
-import { scoreTipi, ITEMS } from "@/lib/tipi";
+import { scoreBig5, ITEMS } from "@/lib/big5Scale";
 import { getNumberContent } from "@/lib/content";
 import { decodeCode, encodeCode, buildLineUrl } from "@/lib/share";
 import { loadSelf } from "@/lib/storage";
 import { track } from "@/lib/analytics";
 import type { CompatibilityResult, Lens, Person } from "@/lib/types";
-import TipiQuiz from "@/components/TipiQuiz";
+import Big5Quiz from "@/components/Big5Quiz";
 
 type Step = "setup" | "target-quiz" | "result";
 type TargetMode = "code" | "quiz";
@@ -74,7 +74,7 @@ export default function Compatibility() {
     setError(null);
     try {
       const lp = lifePathFromISO(targetBirth);
-      const b5 = scoreTipi(answers);
+      const b5 = scoreBig5(answers);
       setTarget({ life_path: lp, big5: b5.scores });
       setStep("setup");
     } catch (e) {
@@ -119,7 +119,7 @@ export default function Compatibility() {
     return buildLineUrl(LINE_URL, encodeCode(self), lens) || "#";
   }, [self, lens]);
 
-  // ── 相手のTIPI-J代理回答 ──
+  // ── 相手の10問を代理回答 ──
   if (step === "target-quiz") {
     const allAnswered = answers.filter((a) => a > 0).length === ITEMS.length;
     return (
@@ -144,7 +144,7 @@ export default function Compatibility() {
         />
 
         <div style={{ marginTop: 22 }}>
-          <TipiQuiz
+          <Big5Quiz
             answers={answers}
             onAnswer={setAnswer}
             idPrefix="tq"

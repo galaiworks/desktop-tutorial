@@ -133,7 +133,6 @@ export default function YearPage() {
 
       <p className="notice">
         パーソナルイヤーは「誕生月 + 誕生日 + 対象年」を1桁まで還元して算出しています。
-        {content?.disclaimer}
         本診断は娯楽・自己理解を目的としたもので、結果を保証するものではありません。
       </p>
     </>
