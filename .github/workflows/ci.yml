@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: 依存関係のインストール
+        run: npm ci
+
+      - name: ユニットテスト
+        run: npm test
+
+      - name: 型チェック・Lint・本番ビルド
+        run: npm run build
+
+      # 公開データの再生成漏れを検出する（有料コンテンツの分離が崩れていないか）
+      - name: 公開データが最新か確認
+        run: |
+          npm run gen:public
+          if ! git diff --quiet -- data/numbers.public.json; then
+            echo "::error::data/numbers.public.json が古いままです。npm run gen:public を実行してコミットしてください。"
+            git diff -- data/numbers.public.json
+            exit 1
+          fi
+
+      # 運営者情報の未設定は公開前チェックなので、CIでは落とさず内容だけ表示する
+      - name: 公開前チェック（参考表示）
+        run: npm run validate || true

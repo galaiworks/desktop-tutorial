@@ -1,0 +1,15 @@
+{
+  "$comment": "数秘術エンジンの流派設定。監修者の流派に合わせて切替可能（要件定義書 §5.2）。",
+  "masterNumbers": {
+    "include11": true,
+    "include22": true,
+    "include33": true,
+    "include44": false
+  },
+  "reductionMethod": "sum-all",
+  "reductionMethodOptions": ["sum-all", "reduce-each-pillar"],
+  "reductionMethodNotes": {
+    "sum-all": "生年月日の全桁を一括合計してから1桁（またはマスター）まで還元する（デフォルト）",
+    "reduce-each-pillar": "年・月・日を各々還元してから合計し、最後に還元する"
+  }
+}

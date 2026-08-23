@@ -1,0 +1,29 @@
+{
+  "name": "numen",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NUMEN — 数秘術 × ビッグファイブ AI診断・マッチングツール",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "validate": "node scripts/validate-config.mjs",
+    "gen:public": "node scripts/gen-public-content.mjs",
+    "prebuild": "node scripts/gen-public-content.mjs"
+  },
+  "dependencies": {
+    "next": "^14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.5"
+  }
+}

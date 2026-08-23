@@ -1,0 +1,103 @@
+{
+  "id": "tipi-j",
+  "label": "日本語版 Ten Item Personality Inventory（TIPI-J）",
+  "$comment": "TIPI-J（日本語版 Ten Item Personality Inventory）尺度定義。要件定義書 §5.3 / §13 / 付録A。",
+  "citation": "小塩真司・阿部晋吾・カトローニ ピノ（2012）「日本語版Ten Item Personality Inventory（TIPI-J）作成の試み」パーソナリティ研究, 21, 40–52.",
+  "licenseNote": "採点構造（各項目がどの因子に負荷し、逆転項目か）は方法論的事実。ただし【項目本文は公式版（小塩ら, 2012, パーソナリティ研究, 21, 40–52）を改変せずに使用する】。本ファイルの text は placeholder であり、商用利用の権利確認の上で正規の項目文へ差し替えること。",
+  "validated": true,
+  "validationNote": "902名で作成され、再検査信頼性 r=.64〜.86 が報告されている（要件定義書 §5.3）。ただし項目本文は placeholder のままであり、権利確認と正規項目文への差し替えが完了するまで active にしてはならない。",
+  "scale": {
+    "min": 1,
+    "max": 7,
+    "anchors": {
+      "1": "全く違うと思う",
+      "2": "おおよそ違うと思う",
+      "3": "少し違うと思う",
+      "4": "どちらでもない",
+      "5": "少しそう思う",
+      "6": "おおよそそう思う",
+      "7": "強くそう思う"
+    },
+    "stem": "私は自分自身のことを…"
+  },
+  "reverseFormula": "8 - value",
+  "factors": {
+    "E": "外向性",
+    "A": "協調性",
+    "C": "勤勉性（誠実性）",
+    "N": "神経症傾向（情緒不安定性）",
+    "O": "開放性"
+  },
+  "items": [
+    {
+      "id": 1,
+      "factor": "E",
+      "reverse": false,
+      "placeholder": true,
+      "text": "【要・公式項目文差替】活発・外向的だと思う（TIPI-J 項目1 相当）"
+    },
+    {
+      "id": 2,
+      "factor": "A",
+      "reverse": true,
+      "placeholder": true,
+      "text": "【要・公式項目文差替】他人に不満をもち、もめごとを起こしやすいと思う（TIPI-J 項目2 相当・逆転）"
+    },
+    {
+      "id": 3,
+      "factor": "C",
+      "reverse": false,
+      "placeholder": true,
+      "text": "【要・公式項目文差替】しっかりしていて、自分に厳しいと思う（TIPI-J 項目3 相当）"
+    },
+    {
+      "id": 4,
+      "factor": "N",
+      "reverse": false,
+      "placeholder": true,
+      "text": "【要・公式項目文差替】心配性で、うろたえやすいと思う（TIPI-J 項目4 相当）"
+    },
+    {
+      "id": 5,
+      "factor": "O",
+      "reverse": false,
+      "placeholder": true,
+      "text": "【要・公式項目文差替】新しいことが好きで、変わった考えをもつと思う（TIPI-J 項目5 相当）"
+    },
+    {
+      "id": 6,
+      "factor": "E",
+      "reverse": true,
+      "placeholder": true,
+      "text": "【要・公式項目文差替】ひかえめで、おとなしいと思う（TIPI-J 項目6 相当・逆転）"
+    },
+    {
+      "id": 7,
+      "factor": "A",
+      "reverse": false,
+      "placeholder": true,
+      "text": "【要・公式項目文差替】人に気をつかう、やさしい人間だと思う（TIPI-J 項目7 相当）"
+    },
+    {
+      "id": 8,
+      "factor": "C",
+      "reverse": true,
+      "placeholder": true,
+      "text": "【要・公式項目文差替】だらしなく、うっかりしていると思う（TIPI-J 項目8 相当・逆転）"
+    },
+    {
+      "id": 9,
+      "factor": "N",
+      "reverse": true,
+      "placeholder": true,
+      "text": "【要・公式項目文差替】冷静で、気分が安定していると思う（TIPI-J 項目9 相当・逆転）"
+    },
+    {
+      "id": 10,
+      "factor": "O",
+      "reverse": true,
+      "placeholder": true,
+      "text": "【要・公式項目文差替】発想力に欠けた、平凡な人間だと思う（TIPI-J 項目10 相当・逆転）"
+    }
+  ]
+}

@@ -1,50 +1,78 @@
-# TimeKeeper Pro for Mac
+# NUMEN — 数秘術 × ビッグファイブ AI診断・マッチングツール
 
-プロフェッショナル向けタイムキーパー macOSアプリケーション
+生年月日から算出する**数秘術（ライフパスナンバー）**と、心理学で最も信頼される性格理論**ビッグファイブ（TIPI-J）**を掛け合わせ、**AIがパーソナライズした診断文**を生成します。診断を入口に恋愛／ビジネスの相性マッチングへ展開し、公式LINE登録へ誘導する MVP 実装です。
 
-## 概要
+> 要件定義書（コードネーム NUMEN v0.1）の **MVP（フェーズ1）およびフェーズ2の機能一式**を実装したものです。
 
-セミナー登壇者・司会者がスライド操作を妨げることなく、画面上に半透明のカウントダウンタイマーを表示し、時間帯に応じた色分けで直感的に残り時間を把握できるツールです。
+## 実装済みスコープ
 
-## 特徴
+| 要件 | 実装 |
+|---|---|
+| §5.2 数秘エンジン（マスターナンバー・還元方式を設定化） | `src/lib/numerology.ts` + `config/numerology.json` |
+| §5.3 Big5 10問・5因子採点（尺度アダプタ化） | `src/lib/big5Scale.ts` + `config/scales/*` |
+| §5.4 融合ロジック（数秘ラベル × Big5補正） | `src/lib/fusion.ts` |
+| §5.5 AI生成レイヤー（確定値はコード／読み物はAI） | `src/lib/generate.ts` + `src/app/api/generate` |
+| §5.6 相性エンジン（数秘マトリクス × Big5相性・レンズ別） | `src/lib/compatibility.ts` + `config/*` |
+| §5.7 LINE誘導（結果を引き継ぐパラメータ付きURL） | `src/app/diagnose/page.tsx` |
+| §5.2 ナンバー解説データ（12種・独自執筆） | `data/numbers/{n}.json` |
+| §3.1 2者相性診断UI（恋愛／ビジネスレンズ） | `src/app/compatibility/page.tsx` |
+| §8 無料/有料の出し分け（相性はスコア＋さわりまで） | 結果画面 + `depth: teaser` |
+| §10 禁止ワードガード + 娯楽目的の但し書き自動付与 | `src/lib/guard.ts` |
+| §12 KPI計測（ファネル全ステップ） | `src/lib/analytics.ts` |
+| §13 プライバシーポリシー / 利用にあたって | `src/app/privacy`, `src/app/terms` |
+| §7 データ設計（RLS込みスキーマ・保存） | `supabase/migrations/0001_init.sql` + `src/lib/persistence.ts` |
+| §8 有料コンテンツのサーバー側ゲート（LIFF検証） | `src/app/api/reading/full` + `src/lib/lineAuth.ts` |
+| レーダーチャート（依存ゼロのSVG） | `src/components/RadarChart.tsx` |
+| §3.2 名前の数字（ディスティニー／ソウル／パーソナリティ） | `src/lib/name.ts` + `src/app/name` |
+| §3.2 パーソナルイヤー（年運） | `src/lib/personalYear.ts` + `src/app/year` |
+| §3.2 BtoBチーム相性ダッシュボード | `src/lib/team.ts` + `src/app/team` |
+| §3.2 ユーザー同士のマッチング（DB） | `src/lib/matching.ts` + `src/app/match` + `api/match` |
+| §5.7 LIFF（LINE内でフル鑑定を開放） | `src/app/liff` + `api/link` |
 
-- **フローティングタイマー**: 常に最前面に表示、クリックスルー対応
-- **フェーズカラー**: 残り時間に応じて自動で色が変化（最大8段階）
-- **マルチモニター対応**: 複数ディスプレイでの表示をサポート
-- **ユニバーサルデザイン**: VoiceOver、ダイナミックタイプ、フルキーボードアクセス対応
-- **多言語対応**: 日本語、英語、中国語、ドイツ語、フランス語、スペイン語、韓国語
+決済（Stripe等）は要件定義書 §3.3 により非スコープです。
 
-## ドキュメント
+## 設計上の重要判断（要件定義書のデフォルト採用）
 
-| ファイル | 説明 |
-|:---|:---|
-| [docs/TimeKeeperPro_Mac_App_Design.md](docs/TimeKeeperPro_Mac_App_Design.md) | 設計仕様書（機能、UI、アーキテクチャ） |
-| [CLAUDE_DEVELOPMENT_GUIDE.md](CLAUDE_DEVELOPMENT_GUIDE.md) | Claude Code用開発ガイド |
+- **マスターナンバー**: 11/22/33 を含む **12種**（`config/numerology.json` で切替可、44はデフォルト無効）
+- **還元方式**: 一括合計（`sum-all`）をデフォルト。各柱還元（`reduce-each-pillar`）も設定で選択可
+- **責務分離**: 番号・スコア・相性判定は**すべてコードで確定**。AIは読み物化のみ（ハルシネーション防止）
+- **フォールバック**: `ANTHROPIC_API_KEY` 未設定でも決定論テンプレで動作（キーがあれば Claude API を使用）
+- **無料で見せる範囲**（§14の未確定論点）: 相性は**スコアの数値は見せ、攻略は渡さない**を既定に。拡散性を優先しつつ§8の鉄則を守る
+- **診断コードによる引き継ぎ**: `N1-11-72-40-85-30-66` 形式。相性診断の相手指定とLINE誘導で共用（人が読める・コピペできる書式）
 
-## 開発環境
-
-- **言語**: Swift 5.10+
-- **フレームワーク**: SwiftUI, AppKit
-- **最小サポートOS**: macOS 14 Sonoma
-- **IDE**: Xcode 15+
-
-## Claude Codeでの開発開始方法
+## セットアップ
 
 ```bash
-# 1. リポジトリをクローン
-git clone https://github.com/galaiworks/desktop-tutorial.git
-cd desktop-tutorial
-
-# 2. Claude Codeを起動
-claude
-
-# 3. 設計書を読み込ませる
-> /read docs/TimeKeeperPro_Mac_App_Design.md
-
-# 4. 開発ガイドに従って開発を開始
-> /read CLAUDE_DEVELOPMENT_GUIDE.md
+npm install
+cp .env.example .env.local   # 任意: ANTHROPIC_API_KEY / NEXT_PUBLIC_LINE_ADD_URL を設定
+npm run dev                  # http://localhost:3000
 ```
 
-## ライセンス
+```bash
+npm test        # ユニットテスト（87件）
+npm run build   # 本番ビルド + 型チェック
+```
 
-MIT License
+## 公開前にやること
+
+```bash
+npm run validate   # 監修・運営者情報の入力漏れを機械チェック
+```
+
+詳細な手順は [`docs/HANDOVER.md`](docs/HANDOVER.md)（監修・運営者向けチェックリスト）にまとめてあります。
+
+- **運営者名・連絡先**（必須）: `config/site.json`。未設定だと法務ページに赤字の警告が出ます。
+- **ビッグファイブ尺度**: 既定は**独自尺度 `numen-10`（権利処理不要・そのまま公開可）**。TIPI-Jに切り替える場合は権利確認と正規項目文への差し替えが必要で、仮テキストのままでは検証ツールとテストが失敗します。
+- **ナンバー解説文**: `data/numbers/*.json` は独自執筆のドラフト。**監修者の確認を経て最終化**。既存ブランド流派の文言は転用していません。
+- **相性マトリクス / Big5相性重み**: `config/numerology_affinity.json`・`config/big5_compat.json` は初期ヒューリスティクス。監修者の流派解釈でチューニングしてください。
+- **法務**: プライバシーポリシー・利用規約は実装済み。使用中の尺度に応じて出典表記が自動で切り替わります。
+- **環境変数**: `NEXT_PUBLIC_LINE_ADD_URL` 未設定だとLINE導線は無効表示。`SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` 未設定なら保存とマッチングは無効（診断は動作）。`NEXT_PUBLIC_LIFF_ID` 未設定なら `/liff` はフル鑑定を出しません。
+- **マイグレーション**: `supabase/migrations/` の SQL を適用してからマッチング機能を有効化してください。
+
+## 技術スタック
+
+Next.js 14（App Router）/ TypeScript / React（モバイルファースト）。数秘・Big5計算は外部依存なしの純ロジック（サーバ／クライアント両対応）。詳細は [`docs/NUMEN_IMPLEMENTATION.md`](docs/NUMEN_IMPLEMENTATION.md)。
+
+---
+
+> 補足: 本リポジトリには別プロジェクト「TimeKeeper Pro」の設計ドキュメント（`docs/TimeKeeperPro_Mac_App_Design.md`, `CLAUDE_DEVELOPMENT_GUIDE.md`）が同梱されています。NUMEN の実装とは独立しています。

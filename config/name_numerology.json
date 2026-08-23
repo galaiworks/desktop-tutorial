@@ -1,0 +1,27 @@
+{
+  "$comment": "名前ベースの数字（ディスティニー／ソウル／パーソナリティ）の設定。要件定義書 §3.2。ピタゴラス式（A=1..I=9, J=1..R=9, S=1..Z=8）を採用。",
+  "treatYAsVowel": false,
+  "reductionMethod": "sum-all",
+  "reductionMethodOptions": ["sum-all", "reduce-each-word"],
+  "reductionMethodNotes": {
+    "sum-all": "全文字を一括合計してから還元（デフォルト）",
+    "reduce-each-word": "姓・名それぞれを還元してから合計し、最後に還元"
+  },
+  "aspects": {
+    "destiny": {
+      "label": "ディスティニーナンバー",
+      "source": "全文字",
+      "meaning": "人生で発揮していく才能と、進んでいく方向性を示します。"
+    },
+    "soul": {
+      "label": "ソウルナンバー",
+      "source": "母音",
+      "meaning": "心の奥で本当に求めているもの、満たされたいと願う欲求を示します。"
+    },
+    "personality": {
+      "label": "パーソナリティナンバー",
+      "source": "子音",
+      "meaning": "初対面の相手に伝わる、外から見えるあなたの印象を示します。"
+    }
+  }
+}
