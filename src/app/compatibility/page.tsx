@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { lifePathFromISO } from "@/lib/numerology";
 import { scoreBig5, ITEMS } from "@/lib/big5Scale";
-import { getNumberContent } from "@/lib/content";
+import { getPublicNumber } from "@/lib/contentPublic";
 import { decodeCode, encodeCode, buildLineUrl } from "@/lib/share";
 import { loadSelf } from "@/lib/storage";
 import { track } from "@/lib/analytics";
@@ -179,8 +179,8 @@ export default function Compatibility() {
 
   // ── 結果 ──
   if (step === "result") {
-    const sc = self ? getNumberContent(self.life_path) : null;
-    const tc = target ? getNumberContent(target.life_path) : null;
+    const sc = self ? getPublicNumber(self.life_path) : null;
+    const tc = target ? getPublicNumber(target.life_path) : null;
     return (
       <>
         <div className="card story">

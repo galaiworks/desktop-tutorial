@@ -201,3 +201,34 @@ UIには一切描画しない。
 ### 公開前チェック（`npm run validate`）
 尺度の構造・仮テキスト・解説データの必須項目・相性マトリクス144通り×2レンズの
 完全性と範囲・Big5重み・年運1〜9・運営者情報を検証する。`--strict` で警告もエラー扱い。
+
+## 10. 有料コンテンツのサーバー側ゲート（§8）
+
+### 直した問題
+当初、フル鑑定の本文（本質・使命・強み・恋愛/仕事・注意点）は
+`data/numbers/*.json` をクライアントコンポーネントから import していたため
+**JSバンドルに丸ごと含まれていた**。画面はCSSの `filter: blur()` で伏せているだけなので、
+`/_next/static/chunks/*.js` を直接開けば全文が読めた＝無料/有料の線引きが成立していなかった。
+
+### 対策
+1. **公開データの分離** — `scripts/gen-public-content.mjs` が
+   `data/numbers/*.json` から公開可の項目（number / isMaster / keywords）だけを
+   `data/numbers.public.json` に書き出す。`prebuild` で自動実行。
+2. **クライアントは公開データのみ参照** — `src/lib/contentPublic.ts` を新設。
+   `fusion.ts`（有料データを読む）から、クライアント安全な `headline.ts` を分離した。
+   `content.ts` / `fusion.ts` は**サーバー専用**。
+3. **本文はサーバーから配信** — `/api/reading/full` がLIFFのIDトークンを
+   LINEの検証エンドポイントで確認し、通った場合にのみ本文を返す
+   （`src/lib/lineAuth.ts`。`aud` とチャネルID、有効期限も検証）。
+   クライアントが送ってくる `line_user_id` は信用しない。
+4. **無料側の表示** — ぼかした本物のテキストではなく、
+   ロックされた「見出しだけ」のリストを出す（本文はそもそも手元に無い）。
+
+### 回帰を防ぐ仕組み
+- `tests/contentGate.test.ts` … 公開データに有料項目が無いこと、
+  公開データが元データと同期していること、`use client` のファイルが
+  `@/lib/content` / `@/lib/fusion` を import しないことを検査。
+- `npm run validate` … 公開ファイルの有料項目混入とキーワードの不一致を検出。
+- CI（`.github/workflows/ci.yml`）… `npm run gen:public` を実行して差分が出たら失敗。
+
+いずれも、わざと `essence` を公開側に混ぜた状態で失敗することを確認済み。

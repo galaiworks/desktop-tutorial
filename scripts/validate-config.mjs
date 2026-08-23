@@ -129,7 +129,28 @@ for (let n = 1; n <= 9; n++) {
   else if (!c.theme || !c.summary) err(`[年運:${n}] theme / summary が空です`);
 }
 
-// ── 6. 運営者情報（§13-4） ──
+// ── 6. 公開データの同期（§8 有料コンテンツの分離） ──
+const PAID_FIELDS = ["essence", "mission", "strengths", "love", "work", "caution"];
+const publicPath = "data/numbers.public.json";
+if (!fs.existsSync(publicPath)) {
+  err(`[公開データ] ${publicPath} がありません（npm run gen:public を実行してください）`);
+} else {
+  const pub = read(publicPath);
+  const rawPublic = fs.readFileSync(publicPath, "utf8");
+  for (const f of PAID_FIELDS) {
+    if (rawPublic.includes(`"${f}"`))
+      err(`[公開データ] 有料項目 ${f} が公開ファイルに含まれています（クライアントに漏れます）`);
+  }
+  for (const n of NUMBERS) {
+    const p = pub.numbers?.[String(n)];
+    const full = read(`data/numbers/${n}.json`);
+    if (!p) err(`[公開データ] ナンバー${n}がありません`);
+    else if (JSON.stringify(p.keywords) !== JSON.stringify(full.keywords))
+      err(`[公開データ] ナンバー${n}のキーワードが元データと不一致です（npm run gen:public）`);
+  }
+}
+
+// ── 7. 運営者情報（§13-4） ──
 const site = read("config/site.json");
 if (!site.operatorName) err("[運営者] operatorName が未設定です（公開前に必須）");
 if (!site.contactEmail) err("[運営者] contactEmail が未設定です（公開前に必須）");

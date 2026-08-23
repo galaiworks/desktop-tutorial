@@ -840,3 +840,24 @@ article.card a {
 input[type="checkbox"] {
   accent-color: var(--story);
 }
+
+/* ロック表示（有料コンテンツは見出しのみ。本文はサーバー側にある） */
+.locked-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.locked-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 4px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+.locked-list li + li {
+  border-top: 1px dashed var(--hairline);
+}
+.locked-list li span {
+  opacity: 0.6;
+}

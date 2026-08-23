@@ -10,7 +10,9 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "validate": "node scripts/validate-config.mjs"
+    "validate": "node scripts/validate-config.mjs",
+    "gen:public": "node scripts/gen-public-content.mjs",
+    "prebuild": "node scripts/gen-public-content.mjs"
   },
   "dependencies": {
     "next": "^14.2.35",

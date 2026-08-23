@@ -1,0 +1,119 @@
+{
+  "$comment": "自動生成ファイル。編集しないこと。data/numbers/*.json を変更したら npm run gen:public を実行する。",
+  "$generatedFrom": "data/numbers/*.json",
+  "$publicFields": [
+    "number",
+    "isMaster",
+    "keywords"
+  ],
+  "numbers": {
+    "1": {
+      "number": 1,
+      "isMaster": false,
+      "keywords": [
+        "先駆",
+        "意志",
+        "独立"
+      ]
+    },
+    "2": {
+      "number": 2,
+      "isMaster": false,
+      "keywords": [
+        "調和",
+        "受容",
+        "共感"
+      ]
+    },
+    "3": {
+      "number": 3,
+      "isMaster": false,
+      "keywords": [
+        "創造",
+        "表現",
+        "楽天"
+      ]
+    },
+    "4": {
+      "number": 4,
+      "isMaster": false,
+      "keywords": [
+        "安定",
+        "誠実",
+        "堅実"
+      ]
+    },
+    "5": {
+      "number": 5,
+      "isMaster": false,
+      "keywords": [
+        "自由",
+        "変化",
+        "好奇心"
+      ]
+    },
+    "6": {
+      "number": 6,
+      "isMaster": false,
+      "keywords": [
+        "愛情",
+        "責任",
+        "奉仕"
+      ]
+    },
+    "7": {
+      "number": 7,
+      "isMaster": false,
+      "keywords": [
+        "探求",
+        "知性",
+        "内省"
+      ]
+    },
+    "8": {
+      "number": 8,
+      "isMaster": false,
+      "keywords": [
+        "実現",
+        "豊かさ",
+        "力"
+      ]
+    },
+    "9": {
+      "number": 9,
+      "isMaster": false,
+      "keywords": [
+        "博愛",
+        "理想",
+        "完成"
+      ]
+    },
+    "11": {
+      "number": 11,
+      "isMaster": true,
+      "keywords": [
+        "直感",
+        "霊性",
+        "啓示"
+      ]
+    },
+    "22": {
+      "number": 22,
+      "isMaster": true,
+      "keywords": [
+        "構想",
+        "現実化",
+        "大器"
+      ]
+    },
+    "33": {
+      "number": 33,
+      "isMaster": true,
+      "keywords": [
+        "無償の愛",
+        "奉仕",
+        "慈愛"
+      ]
+    }
+  }
+}

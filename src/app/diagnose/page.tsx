@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { lifePathFromISO } from "@/lib/numerology";
 import { scoreBig5, ITEMS, scaleFootnote } from "@/lib/big5Scale";
-import { getNumberContent } from "@/lib/content";
-import { fusionHeadline } from "@/lib/fusion";
+import { getPublicNumber, LOCKED_SECTIONS } from "@/lib/contentPublic";
+import { fusionHeadline } from "@/lib/headline";
 import { encodeCode, buildLineUrl, buildCompatibilityUrl } from "@/lib/share";
 import { saveSelf } from "@/lib/storage";
 import { track } from "@/lib/analytics";
@@ -116,7 +116,7 @@ export default function Diagnose() {
   }
 
   async function share() {
-    const content = lifePath ? getNumberContent(lifePath) : null;
+    const content = lifePath ? getPublicNumber(lifePath) : null;
     const url =
       typeof window !== "undefined"
         ? buildCompatibilityUrl(window.location.origin, code)
@@ -134,7 +134,6 @@ export default function Diagnose() {
     } catch {
       // ユーザーが共有をキャンセルした場合は何もしない
     }
-    void content;
   }
 
   // ── 生年月日入力 ──
@@ -232,7 +231,7 @@ export default function Diagnose() {
   }
 
   // ── 結果 ──
-  const content = lifePath ? getNumberContent(lifePath) : null;
+  const content = lifePath ? getPublicNumber(lifePath) : null;
   const headline = lifePath && big5 ? fusionHeadline(lifePath, big5.scores) : "";
 
   return (
@@ -340,32 +339,14 @@ export default function Diagnose() {
           <p className="eyebrow story">フル鑑定</p>
           <h2 className="serif">もっと深く知る</h2>
           <div className="lock-wrap">
-            <div className="locked" aria-hidden="true">
-              <p>
-                <b>本質：</b>
-                {content.essence}
-              </p>
-              <p>
-                <b>使命：</b>
-                {content.mission}
-              </p>
-              <p>
-                <b>強み：</b>
-                {content.strengths.join(" / ")}
-              </p>
-              <p>
-                <b>{lens === "romance" ? "恋愛" : "適職"}：</b>
-                {lens === "romance" ? content.love : content.work}
-              </p>
-              <p>
-                <b>注意点：</b>
-                {content.caution}
-              </p>
-            </div>
-            <p className="lock-badge">
-              <span aria-hidden="true">🔒</span>
-              続きは公式LINEで
-            </p>
+            <ul className="locked-list">
+              {LOCKED_SECTIONS.map((label) => (
+                <li key={label}>
+                  <span aria-hidden="true">🔒</span>
+                  {label}
+                </li>
+              ))}
+            </ul>
           </div>
           <p className="muted" style={{ marginTop: 14 }}>
             あなたのフル鑑定書と、

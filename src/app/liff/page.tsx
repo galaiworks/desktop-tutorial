@@ -1,10 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { decodeCode } from "@/lib/share";
+import { decodeCode, encodeCode } from "@/lib/share";
 import { loadSelf } from "@/lib/storage";
-import { getNumberContent } from "@/lib/content";
-import { fusionHeadline } from "@/lib/fusion";
+import { fusionHeadline } from "@/lib/headline";
 import type { Lens, Person } from "@/lib/types";
 
 const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID || "";
@@ -14,7 +13,7 @@ interface LiffSdk {
   init: (c: { liffId: string }) => Promise<void>;
   isLoggedIn: () => boolean;
   login: () => void;
-  getProfile: () => Promise<{ userId: string; displayName: string }>;
+  getIDToken: () => string | null;
 }
 declare global {
   interface Window {
@@ -22,28 +21,43 @@ declare global {
   }
 }
 
-type State = "loading" | "ready" | "unconfigured" | "error";
+interface FullReading {
+  keywords: string[];
+  essence: string;
+  mission: string;
+  strengths: string[];
+  lensText: string;
+  caution: string;
+}
+
+type State = "loading" | "ready" | "unconfigured" | "denied" | "error";
 
 /**
- * LIFF（LINE内ミニアプリ）エントリ — 要件定義書 §5.7「将来: LIFF」/ §8。
- * LINE内で開かれた友だちに、Webでは伏せているフル鑑定を表示する。
+ * LIFF（LINE内ミニアプリ）エントリ — 要件定義書 §5.7 / §8。
+ * フル鑑定の本文はこのページのバンドルに含めず、IDトークンをサーバーで検証したうえで
+ * /api/reading/full から取得する（クライアント側の表示制御だけに頼らない）。
  */
 export default function LiffPage() {
   const [state, setState] = useState<State>("loading");
-  const [displayName, setDisplayName] = useState("");
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [self, setSelf] = useState<Person | null>(null);
   const [lens, setLens] = useState<Lens>("romance");
+  const [reading, setReading] = useState<FullReading | null>(null);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const fromUrl = decodeCode(params.get("numen") ?? "");
     const stored = loadSelf();
+    const fromUrl = decodeCode(params.get("numen") ?? "");
     const urlLens = params.get("lens");
-    if (urlLens === "business" || urlLens === "romance") setLens(urlLens);
-    else if (stored) setLens(stored.lens);
+    const resolvedLens: Lens =
+      urlLens === "business" || urlLens === "romance"
+        ? urlLens
+        : (stored?.lens ?? "romance");
+    setLens(resolvedLens);
 
-    const resolved = fromUrl ?? (stored ? { life_path: stored.life_path, big5: stored.big5 } : null);
+    const resolved =
+      fromUrl ?? (stored ? { life_path: stored.life_path, big5: stored.big5 } : null);
     setSelf(resolved);
 
     if (!LIFF_ID) {
@@ -51,7 +65,7 @@ export default function LiffPage() {
       return;
     }
 
-    // SDKはCDNから実行時に読み込む（未設定環境でビルドを壊さないため）
+    // SDKは実行時にCDNから読み込む（未設定環境でビルドを壊さないため）
     const script = document.createElement("script");
     script.src = LIFF_SDK;
     script.async = true;
@@ -64,21 +78,31 @@ export default function LiffPage() {
           liff.login();
           return;
         }
-        const profile = await liff.getProfile();
-        setDisplayName(profile.displayName);
-        setState("ready");
-
-        if (resolved) {
-          await fetch("/api/link", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({
-              code: params.get("numen") ?? "",
-              line_user_id: profile.userId,
-              lens: urlLens ?? "romance",
-            }),
-          }).catch(() => {});
+        const idToken = liff.getIDToken();
+        if (!idToken) throw new Error("LINEのIDトークンを取得できませんでした");
+        if (!resolved) {
+          setState("ready");
+          return;
         }
+
+        const res = await fetch("/api/reading/full", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            id_token: idToken,
+            code: encodeCode(resolved),
+            lens: resolvedLens,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setMessage(data.error ?? "フル鑑定を取得できませんでした");
+          setState(res.status === 401 ? "denied" : "error");
+          return;
+        }
+        setDisplayName(data.displayName ?? null);
+        setReading(data.reading);
+        setState("ready");
       } catch (e) {
         setMessage((e as Error).message);
         setState("error");
@@ -94,8 +118,6 @@ export default function LiffPage() {
     };
   }, []);
 
-  const content = self ? getNumberContent(self.life_path) : null;
-
   return (
     <>
       <div className="card story">
@@ -103,15 +125,17 @@ export default function LiffPage() {
         <h1 className="serif">
           {displayName ? `${displayName}さんのフル鑑定` : "フル鑑定"}
         </h1>
+
         {state === "loading" && <p className="muted">読み込んでいます…</p>}
+
         {state === "unconfigured" && (
           <>
             <p className="muted">
               このページは公式LINEの友だち向けです。LINEアプリ内から開いてください。
             </p>
             <p className="muted">
-              （設定メモ：環境変数 <code>NEXT_PUBLIC_LIFF_ID</code>{" "}
-              を設定すると有効化されます）
+              （設定メモ：<code>NEXT_PUBLIC_LIFF_ID</code> と{" "}
+              <code>LINE_LOGIN_CHANNEL_ID</code> を設定すると有効化されます）
             </p>
             <div className="btn-row">
               <Link href="/diagnose" className="btn btn-outline">
@@ -120,11 +144,13 @@ export default function LiffPage() {
             </div>
           </>
         )}
-        {state === "error" && (
+
+        {(state === "denied" || state === "error") && (
           <p className="err" role="alert">
             {message}
           </p>
         )}
+
         {state === "ready" && !self && (
           <>
             <p className="muted">
@@ -139,8 +165,8 @@ export default function LiffPage() {
         )}
       </div>
 
-      {/* LINE内で本人確認できた場合のみ本命コンテンツを開放する（§8のゲートを迂回させない） */}
-      {state === "ready" && self && content && (
+      {/* 本文はサーバー検証を通った場合のみ届く */}
+      {reading && self && (
         <>
           <div className="card story">
             <p className="eyebrow story">あなたの数</p>
@@ -148,33 +174,34 @@ export default function LiffPage() {
               <div className="numeral" aria-hidden="true">
                 {self.life_path}
               </div>
-              <p className="type-name">{fusionHeadline(self.life_path, self.big5)}</p>
+              <p className="type-name">
+                {fusionHeadline(self.life_path, self.big5)}
+              </p>
             </div>
           </div>
 
-          {/* Webでは blur で伏せている本命コンテンツを、LINE内では開放する（§8） */}
           <div className="card">
             <p className="eyebrow story">フル鑑定</p>
             <h2 className="serif">あなたという人の全体像</h2>
             <p>
               <b>本質：</b>
-              {content.essence}
+              {reading.essence}
             </p>
             <p>
               <b>使命：</b>
-              {content.mission}
+              {reading.mission}
             </p>
             <p>
               <b>強み：</b>
-              {content.strengths.join(" / ")}
+              {reading.strengths.join(" / ")}
             </p>
             <p>
               <b>{lens === "romance" ? "恋愛の傾向" : "仕事・適職の傾向"}：</b>
-              {lens === "romance" ? content.love : content.work}
+              {reading.lensText}
             </p>
             <p>
               <b>気をつけたいこと：</b>
-              {content.caution}
+              {reading.caution}
             </p>
           </div>
         </>

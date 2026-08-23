@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { nameNumbers, NAME_CONFIG, type NameAspect } from "@/lib/name";
-import { getNumberContent } from "@/lib/content";
+import { getPublicNumber } from "@/lib/contentPublic";
 import type { LifePath } from "@/lib/types";
 
 const ASPECTS: NameAspect[] = ["destiny", "soul", "personality"];
@@ -72,7 +72,7 @@ export default function NamePage() {
               </div>
             );
           }
-          const c = getNumberContent(n as LifePath);
+          const c = getPublicNumber(n as LifePath);
           return (
             <div className="card" key={aspect}>
               <p className="eyebrow story">
@@ -85,7 +85,6 @@ export default function NamePage() {
                 <p className="type-name">{c.keywords.join("・")}</p>
               </div>
               <p className="muted">{meta.meaning}</p>
-              <p>{c.essence}</p>
             </div>
           );
         })}

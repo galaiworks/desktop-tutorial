@@ -21,6 +21,7 @@
 | §12 KPI計測（ファネル全ステップ） | `src/lib/analytics.ts` |
 | §13 プライバシーポリシー / 利用にあたって | `src/app/privacy`, `src/app/terms` |
 | §7 データ設計（RLS込みスキーマ・保存） | `supabase/migrations/0001_init.sql` + `src/lib/persistence.ts` |
+| §8 有料コンテンツのサーバー側ゲート（LIFF検証） | `src/app/api/reading/full` + `src/lib/lineAuth.ts` |
 | レーダーチャート（依存ゼロのSVG） | `src/components/RadarChart.tsx` |
 | §3.2 名前の数字（ディスティニー／ソウル／パーソナリティ） | `src/lib/name.ts` + `src/app/name` |
 | §3.2 パーソナルイヤー（年運） | `src/lib/personalYear.ts` + `src/app/year` |
@@ -48,7 +49,7 @@ npm run dev                  # http://localhost:3000
 ```
 
 ```bash
-npm test        # ユニットテスト（82件）
+npm test        # ユニットテスト（87件）
 npm run build   # 本番ビルド + 型チェック
 ```
 
